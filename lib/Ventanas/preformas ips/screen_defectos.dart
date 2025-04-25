@@ -395,6 +395,7 @@ class FormularioGeneralDatosDEFIPS extends StatelessWidget {
                 field?.save();
               },
               label: 'Hora',
+              isNumeric: false,
               valorInicial: widget.datosDefIps.Hora,
               isRequired: true,),                       
           DropdownSimple(
@@ -507,7 +508,8 @@ class FormularioGeneralDatosDEFIPS extends StatelessWidget {
               },
               label: 'Observaciones',
               valorInicial: widget.datosDefIps.Observaciones,
-              
+              isNumeric: false,
+              isRequired: false,
               ),
 
     ]

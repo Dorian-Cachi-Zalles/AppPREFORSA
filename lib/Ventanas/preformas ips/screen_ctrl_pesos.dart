@@ -347,6 +347,7 @@ class FormularioGeneralDatosPESOSIPS extends StatelessWidget {
                 field?.save();
               },
               label: 'Hora',
+              isNumeric: false,
               valorInicial: widget.datosPESOSIPS.Hora,
               isRequired: true,
               ),
@@ -361,7 +362,8 @@ class FormularioGeneralDatosPESOSIPS extends StatelessWidget {
               valorInicial: widget.datosPESOSIPS.PA,
               isRequired: true,),
         CustomInputField(
-              name: 'PesoTara',              
+              name: 'PesoTara',
+                            
               onChanged: (value) {                
                 final field = _formKey.currentState?.fields['PesoTara'];
                 field?.validate(); // Valida solo este campo

@@ -259,7 +259,7 @@ class _ScreenListDatosMPIPSState extends State<ScreenListDatosMPIPS> {
     idregistro: idregistro,  // Ya sabemos que no es 0 ni null
               MateriPrima: 'JADE CZ 328A',
               INTF: ' ',
-              CantidadEmpaque: ' ',
+              CantidadEmpaque: '1100Kg',
               Identif: ' ',
               CantidadBolsones: 1,
               Dosificacion: 0,
@@ -490,11 +490,12 @@ class FormularioGeneralDatosMPIPS extends StatelessWidget {
               },
               label: 'Identif',
               valorInicial: widget.datosMpIps.Identif.toString(),
-              isRequired: true,),
+              isRequired: true,
+              isNumeric: false,),
 
           DropdownSimple<dynamic>(
             name: 'CantidadBolsones',
-            label: 'Cantidadbolsones',
+            label: 'Cantidad de bolsones',
             textoError: 'Selecciona',
             valorInicial: widget.datosMpIps.CantidadBolsones,
             opciones: 'CantidadBolsones',
@@ -513,7 +514,7 @@ class FormularioGeneralDatosMPIPS extends StatelessWidget {
                 field?.validate(); // Valida solo este campo
                 field?.save();
               },
-              label: 'Dosificacion',
+              label: 'Dosificacion [%]',
               valorInicial: widget.datosMpIps.Dosificacion.toString(),
               isNumeric: true,
               isRequired: true,
@@ -521,7 +522,7 @@ class FormularioGeneralDatosMPIPS extends StatelessWidget {
               min: 0,),
 
           CustomInputField(
-              name: 'Humedad',
+              name: 'Humedad [%]',
               onChanged: (value) {
                 final field = _formKey.currentState?.fields['Humedad'];
                 field?.validate(); // Valida solo este campo

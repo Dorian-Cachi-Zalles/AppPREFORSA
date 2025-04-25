@@ -2,6 +2,7 @@ import 'package:control_de_calidad/Providers/BDpreformasIPS.dart';
 import 'package:control_de_calidad/Providers/Providerids.dart';
 import 'package:control_de_calidad/Ventanas/preformas%20ips/form_coloranteips.dart';
 import 'package:control_de_calidad/Ventanas/preformas%20ips/screen_datosiniciales.dart';
+import 'package:control_de_calidad/widgets/reporte.dart';
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
 
@@ -21,10 +22,56 @@ class ScreenEstadoRegistros extends StatelessWidget {
         title: const Text('Estado de Registros'),
         centerTitle: true,
         backgroundColor: Colors.blueAccent.shade100,
+
         elevation: 0,
-        actions: [
+        actions: [           
+    IconButton(
+      icon: const Icon(Icons.picture_as_pdf),
+      tooltip: 'Generar PDF',
+     onPressed: () async {
+      providerdatosips.clearData();
+        // Obtener datos de cada provider
+        final datosRegistro = context.read<RegistroIPSProvider>().toMapString();
+        final defectos = context.read<DatosProviderPrefIPS>().datosdefipsList;
+        final pesos = context.read<DatosProviderPrefIPS>().datospesosipsList;        
+
+final listaMapeadadefectos = defectos.map<Map<String, String>>((d) {
+  final map = d.toMap();
+
+  // Eliminamos campos que no queremos
+  map.remove('id');
+  map.remove('hasErrors');
+
+  // Convertimos todo a String
+  return map.map((key, value) => MapEntry(key, value.toString()));
+}).toList();
+
+final listaMapeadapesos = pesos.map<Map<String, String>>((d) {
+  final map = d.toMap();
+
+  // Eliminamos campos que no queremos
+  map.remove('id');
+  map.remove('hasErrors');
+
+  // Convertimos todo a String
+  return map.map((key, value) => MapEntry(key, value.toString()));
+}).toList();
+
+
+        // Generar PDF
+        final generador = GeneradorReporteCalidad();
+        await generador.generarPdfDesdeDatos(
+          datos: datosRegistro,
+          defectos: listaMapeadadefectos,
+          pesos: listaMapeadapesos,
+        );
+
+        
+      },
+    ),
+  ],
           
-        ],
+        
       ),
       body: Column(
         children: [

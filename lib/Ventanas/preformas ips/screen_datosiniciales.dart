@@ -17,14 +17,14 @@ class RegistroIPSProvider with ChangeNotifier {
   SharedPreferences? _prefs;
   bool isLoading = true;
 
-  String Modalidad = " ";
+  String Modalidad = "Normal";
   String Lote = " ";
-  String Maquinista = " ";
+  String Maquinista = "Agustin Fernadez";
   int Parte = 0;
-  String Producto = " ";
-  String Gramaje = " ";
-  String Empaque = " ";
-  String Cavhabilitadas = " ";
+  String Producto = "CRISTAL EC30";
+  String Gramaje = "20.1 M5 R";
+  String Empaque = "Caja";
+  String Cavhabilitadas = "96";
   double Ciclo = 0.0;
   double PesoProm = 0.0;
   int PAinicial = 0;
@@ -37,6 +37,31 @@ class RegistroIPSProvider with ChangeNotifier {
   int Cantidadtotaldepiezas = 0;
   double CantidadtotalKg = 0.0;
   bool Conformidad = false;
+
+  Map<String, String> toMapString() {
+  return {
+    'Modalidad': Modalidad,
+    'Lote': Lote,
+    'Maquinista': Maquinista,
+    'Parte': Parte.toString(),
+    'Producto': Producto,
+    'Gramaje': Gramaje,
+    'Empaque': Empaque,
+    'Cavhabilitadas': Cavhabilitadas,
+    'Ciclo': Ciclo.toString(),
+    'PesoProm': PesoProm.toString(),
+    'PAinicial': PAinicial.toString(),
+    'PAfinal': PAfinal.toString(),
+    'Cantidad': Cantidad.toString(),
+    'Pesopromneto': Pesopromneto.toString(),
+    'Totalcajascont': Totalcajascont.toString(),
+    'Saldos': Saldos.toString(),
+    'Totalprodu': Totalprodu.toString(),
+    'Cantidadtotaldepiezas': Cantidadtotaldepiezas.toString(),
+    'CantidadtotalKg': CantidadtotalKg.toString(),
+    'Conformidad': Conformidad ? '1' : '0',
+  };
+}
 
   RegistroIPSProvider() {
     _initPrefs();
@@ -51,14 +76,14 @@ class RegistroIPSProvider with ChangeNotifier {
 
   void _loadData() {
     if (_prefs == null) return;
-    Modalidad = _prefs!.getString("Modalidad") ?? " ";
+    Modalidad = _prefs!.getString("Modalidad") ?? "Normal";
     Lote = _prefs!.getString("Lote") ?? " ";
-    Maquinista = _prefs!.getString("Maquinista") ?? " ";
+    Maquinista = _prefs!.getString("Maquinista") ?? "Agustin Fernadez";
     Parte = _prefs!.getInt("Parte") ?? 0;
-    Producto = _prefs!.getString("Producto") ?? " ";
-    Gramaje = _prefs!.getString("Gramaje") ?? " ";
-    Empaque = _prefs!.getString("Empaque") ?? " ";
-    Cavhabilitadas = _prefs!.getString("Cavhabilitadas") ?? " ";
+    Producto = _prefs!.getString("Producto") ?? "CRISTAL EC30";
+    Gramaje = _prefs!.getString("Gramaje") ?? "20.1 M5 R";
+    Empaque = _prefs!.getString("Empaque") ?? "Caja";
+    Cavhabilitadas = _prefs!.getString("Cavhabilitadas") ?? "96";
     Ciclo = _prefs!.getDouble("Ciclo") ?? 0.0;
     PesoProm = _prefs!.getDouble("PesoProm") ?? 0.0;
     PAinicial = _prefs!.getInt("PAinicial") ?? 0;
@@ -221,14 +246,14 @@ class RegistroIPSProvider with ChangeNotifier {
   Future<void> clearData() async {
     if (_prefs == null) return;
     await _prefs!.clear();
-    Modalidad = " ";
+    Modalidad = "Normal";
     Lote = " ";
-    Maquinista = " ";
+    Maquinista = "Agustin Fernadez";
     Parte = 0;
-    Producto = " ";
-    Gramaje = " ";
-    Empaque = " ";
-    Cavhabilitadas = " ";
+    Producto = "CRISTAL EC30";
+    Gramaje = "20.1 M5 R";
+    Empaque = "Caja";
+    Cavhabilitadas = "96";
     Ciclo = 0.0;
     PesoProm = 0.0;
     PAinicial = 0;
@@ -279,6 +304,8 @@ class _FormularioRegistroIPSState extends State<FormularioRegistroIPS> {
     if (formState != null) {
       // Obtén los valores actuales de PesoTara y PesoNeto
     final String gramaje = formState.fields['Gramaje']?.value ?? '';
+    
+
     final String empaque = formState.fields['Empaque']?.value ?? '';
     final Map<String, Map<String, int>> dataLookup = {
       'Caja': {
@@ -373,9 +400,10 @@ class _FormularioRegistroIPSState extends State<FormularioRegistroIPS> {
 CustomInputField(
   name: 'Lote',
   label: 'Lote',
-  valorInicial: provider.Lote.toString(),
+  valorInicial: provider.Lote,
   isRequired: true,
-  maxLength: 10,
+  isNumeric: false,
+  
   onChanged: (value) {
     // Convertir el valor según el tipo de dato
     provider.updateData(Lote: value ?? ' ');
@@ -591,13 +619,15 @@ CheckboxSimple(
   onChanged: (value) {
     provider.updateData(Conformidad: value);
   },
-),          ];
+),];
+
+
             return Scaffold(
               body: SingleChildScrollView(
                 padding: const EdgeInsets.all(12),
                 child: FormBuilder(
                   key: _formKey,
-                  autovalidateMode: AutovalidateMode.onUserInteraction,
+                  
                   child: Column(
                     crossAxisAlignment: CrossAxisAlignment.start,
                     children: [

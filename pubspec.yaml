@@ -39,9 +39,13 @@ dependencies:
   flutter_settings_ui: ^3.0.1
   form_builder_validators: ^11.0.0
   http: ^1.2.2
+  http_parser: ^4.0.2
   intl: ^0.19.0  
+  open_file: ^3.5.10
   panara_dialogs: ^0.1.5
   path: ^1.9.0
+  path_provider: ^2.1.5
+  permission_handler: ^10.2.0
   persistent_bottom_nav_bar: ^6.2.1
   provider: ^6.1.2
   reactive_forms: ^17.0.1

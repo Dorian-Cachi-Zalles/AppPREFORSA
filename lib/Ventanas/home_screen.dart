@@ -339,7 +339,8 @@ final GlobalKey<ScaffoldState> _scaffoldKey = GlobalKey<ScaffoldState>();
 
                         // Mapa de IDs con sus respectivas pantallas
                         final Map<int, Widget Function(BuildContext)> pantallas = {
-                          1: (context) => const ScreenPreformasIPS(),                          
+                          1: (context) => const ScreenPreformasIPS(),
+                          2: (context) => const ScreenPreformasIPS(),                           
                         };
 
                         return ListTile(

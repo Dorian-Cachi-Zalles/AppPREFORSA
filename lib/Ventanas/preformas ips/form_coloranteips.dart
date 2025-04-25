@@ -147,7 +147,7 @@ class _FormularioColoranteIPSState extends State<FormularioColoranteIPS> {
 
   // Mapa para las opciones de Dropdowns
   final Map<String, List<dynamic>> dropOptionsColorante = {
-    'Colorante': ['Al inicio', 'Medio', 'Final'],
+    'Colorante': ['Microbatch azul', 'Microbatch verde'],
     'CantidadBolsones': [1, 2, 3, 4, 5, 6],
   };
 
@@ -167,8 +167,7 @@ class _FormularioColoranteIPSState extends State<FormularioColoranteIPS> {
                 child: SingleChildScrollView(
                   padding: const EdgeInsets.all(0),
                   child: FormBuilder(
-                    key: _formKey,
-                    autovalidateMode: AutovalidateMode.onUserInteraction,
+                    key: _formKey,                    
                     child: FocusScope(
                       node: FocusScopeNode(),// FocusScope global para todo el formulario
                       child: Column(
@@ -245,7 +244,7 @@ class _FormularioColoranteIPSState extends State<FormularioColoranteIPS> {
                                 Expanded(
                                   child: CustomInputField(
                                     name: 'Dosificacion',
-                                    label: 'Dosificacion',
+                                    label: 'Dosificacion [RPM]',
                                     valorInicial: provider.Dosificacion.toString(),
                                     isNumeric: true,
                                     isRequired: true,
@@ -258,7 +257,7 @@ class _FormularioColoranteIPSState extends State<FormularioColoranteIPS> {
                                 Expanded(
                                   child: DropdownSimple<int>(
                                     name: 'CantidadBolsones',
-                                    label: 'CantidadBolsones',
+                                    label: 'Cantidad de Bolsones',
                                     valorInicial: provider.CantidadBolsones,
                                     textoError: 'Seleccione una opción',
                                     opciones: 'CantidadBolsones',

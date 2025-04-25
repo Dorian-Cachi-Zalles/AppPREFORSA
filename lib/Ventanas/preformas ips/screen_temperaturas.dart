@@ -315,7 +315,7 @@ class FormularioGeneralDatosTEMPIPS extends StatelessWidget {
       key: _formKey,
       child: Column(
         children: [
-          TextoSimple(
+          CustomInputField(
               name: 'Hora',
               onChanged: (value) {
                 final field = _formKey.currentState?.fields['Hora'];
@@ -323,8 +323,10 @@ class FormularioGeneralDatosTEMPIPS extends StatelessWidget {
                 field?.save();
               },
               label: 'Hora',
+              isNumeric: false,
+              isRequired: true,
               valorInicial: widget.datosTempips.Hora,
-              textoError: 'error'),
+              ),
 
            DropdownSimple(
             name: 'Fase',
@@ -350,7 +352,7 @@ class FormularioGeneralDatosTEMPIPS extends StatelessWidget {
         return Expanded(
           child: Padding(
             padding: const EdgeInsets.symmetric(horizontal: 5.0), // Espaciado entre elementos
-            child: TextoSimple(
+            child: CustomInputField(
               name: 'Cavidades_$index',
               onChanged: (value) {
                 final field = _formKey.currentState?.fields['Cavidades_$index'];
@@ -358,8 +360,10 @@ class FormularioGeneralDatosTEMPIPS extends StatelessWidget {
                 field?.save();
               },
               label: 'Cavidad ${index + 1}',
+              isNumeric: true,
+              isRequired: true,
               valorInicial: widget.datosTempips.Cavidades[index].toString(),
-              textoError: 'error',
+              
             ),
           ),
         );
@@ -378,7 +382,7 @@ Titulos(titulo: 'Temperatura del cuerpo',tipo: 0,),
         return Expanded(
           child: Padding(
             padding: const EdgeInsets.symmetric(horizontal: 5.0), // Espaciado entre elementos
-            child: TextoSimple(
+            child: CustomInputField(
               name: 'Tcuerpo_$index',
               onChanged: (value) {
                 final field = _formKey.currentState?.fields['Tcuerpo_$index'];
@@ -386,8 +390,10 @@ Titulos(titulo: 'Temperatura del cuerpo',tipo: 0,),
                 field?.save();
               },
               label: 'Temp. ${index + 1}',
+              isNumeric: true,
+              isRequired: true,
               valorInicial: widget.datosTempips.Tcuerpo[index].toString(),
-              textoError: 'error',
+              
             ),
           ),
         );
@@ -405,7 +411,7 @@ Titulos(titulo: 'Temperatura del cuello',tipo: 0,),
         return Expanded(
           child: Padding(
             padding: const EdgeInsets.symmetric(horizontal: 5.0), // Espaciado entre elementos
-            child: TextoSimple(
+            child: CustomInputField(
               name: 'Tcuello_$index',
               onChanged: (value) {
                 final field = _formKey.currentState?.fields['Tcuello_$index'];
@@ -413,8 +419,10 @@ Titulos(titulo: 'Temperatura del cuello',tipo: 0,),
                 field?.save();
               },
               label: 'Temp. ${index + 1}',
+              isNumeric: true,
+              isRequired: true,
               valorInicial: widget.datosTempips.Tcuello[index].toString(),
-              textoError: 'error',
+              
             ),
           ),
         );

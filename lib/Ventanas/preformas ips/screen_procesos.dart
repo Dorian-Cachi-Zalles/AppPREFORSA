@@ -319,6 +319,7 @@ class FormularioGeneralDatosPROCEIPS extends StatelessWidget {
               },
               label: 'Hora',
               valorInicial: widget.DatosProceips.Hora,
+              isNumeric: false,
               isRequired: true,),
 
           CustomInputField(
@@ -328,8 +329,9 @@ class FormularioGeneralDatosPROCEIPS extends StatelessWidget {
                 field?.validate(); // Valida solo este campo
                 field?.save();
               },
-              label: 'Paprod',
+              label: 'PA producido',
               valorInicial: widget.DatosProceips.PAprod,
+              isNumeric: true,
               isRequired: true,),
 
             const SizedBox(height: 15,),
@@ -344,7 +346,7 @@ class FormularioGeneralDatosPROCEIPS extends StatelessWidget {
                 field?.validate(); // Valida solo este campo
                 field?.save();
               },
-              label: 'TempTolvaSec_${index+1}',
+              label: 'Temperatura Tolva Seccionada ${index+1} [°C]',
               valorInicial: widget.DatosProceips.TempTolvaSec[index].toString(),  
               isNumeric: true,
               isRequired: true,),
@@ -356,7 +358,7 @@ class FormularioGeneralDatosPROCEIPS extends StatelessWidget {
                 field?.validate(); // Valida solo este campo
                 field?.save();
               },
-              label: 'Tempprod',
+              label: 'Temperatura de prod [°C]',
               valorInicial: widget.DatosProceips.TempProd.toString(),
               isNumeric: true,
               isRequired: true,),
@@ -368,7 +370,7 @@ class FormularioGeneralDatosPROCEIPS extends StatelessWidget {
                 field?.validate(); // Valida solo este campo
                 field?.save();
               },
-              label: 'Tciclo',
+              label: 'Tiempo de ciclo [seg]',
               valorInicial: widget.DatosProceips.Tciclo.toString(),
              isNumeric: true,
               isRequired: true,),
@@ -380,7 +382,7 @@ class FormularioGeneralDatosPROCEIPS extends StatelessWidget {
                 field?.validate(); // Valida solo este campo
                 field?.save();
               },
-              label: 'Tenfri',
+              label: 'Tiempo de enfriamiento [seg]',
               valorInicial: widget.DatosProceips.Tenfri.toString(),
               isNumeric: true,
               isRequired: true,),
