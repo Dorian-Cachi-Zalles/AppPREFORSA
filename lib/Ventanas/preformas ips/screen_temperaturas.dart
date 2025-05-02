@@ -252,11 +252,11 @@ class _EditDatosTEMPIPSFormState extends State<EditDatosTEMPIPSForm> {
     bool enviado = await provider.enviarDatosAPIDatosTEMPIPS(widget.id);
 
     if (!enviado) {
-      const EnviadoDialog(seEnvio: false,);      
+      EnviadoDialog.mostrar(context, false);      
     } else {
       final updatedDatitoEnviado = obtenerDatosActualizados(hasSend: true);
       await provider.updateDatosTEMPIPS(widget.id, updatedDatitoEnviado);
-       const EnviadoDialog(seEnvio: true,); 
+       EnviadoDialog.mostrar(context, true); 
       Navigator.pop(context);
     }
   },

@@ -325,12 +325,12 @@ class _EditDatosDEFIPSFormState extends State<EditDatosDEFIPSForm> {
     bool enviado = await provider.enviarDatosAPIDatosDEFIPS(widget.id);
 
     if (!enviado) {
-    const EnviadoDialog(seEnvio: false,); 
+    EnviadoDialog.mostrar(context, false);
      
     } else {
       final updatedDatitoEnviado = obtenerDatosActualizados(hasSend: true);
       await provider.updateDatosDEFIPS(widget.id, updatedDatitoEnviado);
-     const EnviadoDialog(seEnvio: true,); 
+     EnviadoDialog.mostrar(context, true);
       Navigator.pop(context);
     }
   },

@@ -2,7 +2,6 @@ import 'package:control_de_calidad/Providers/BDpreformasIPS.dart';
 import 'package:control_de_calidad/Providers/Providerids.dart';
 import 'package:control_de_calidad/Ventanas/preformas%20ips/form_coloranteips.dart';
 import 'package:control_de_calidad/Ventanas/preformas%20ips/screen_datosiniciales.dart';
-import 'package:control_de_calidad/widgets/reporte.dart';
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
 
@@ -13,7 +12,6 @@ class ScreenEstadoRegistros extends StatelessWidget {
   Widget build(BuildContext context) {
     final providerregistro = Provider.of<IdsProvider>(context);
     final providerIPS = Provider.of<DatosProviderPrefIPS>(context);
-    final providerColorante = Provider.of<ColoranteIPSProvider>(context);
     final providerdatosips= Provider.of<RegistroIPSProvider>(context);
 
 
@@ -28,44 +26,10 @@ class ScreenEstadoRegistros extends StatelessWidget {
     IconButton(
       icon: const Icon(Icons.picture_as_pdf),
       tooltip: 'Generar PDF',
-     onPressed: () async {
-      providerdatosips.clearData();
-        // Obtener datos de cada provider
-        final datosRegistro = context.read<RegistroIPSProvider>().toMapString();
-        final defectos = context.read<DatosProviderPrefIPS>().datosdefipsList;
-        final pesos = context.read<DatosProviderPrefIPS>().datospesosipsList;        
-
-final listaMapeadadefectos = defectos.map<Map<String, String>>((d) {
-  final map = d.toMap();
-
-  // Eliminamos campos que no queremos
-  map.remove('id');
-  map.remove('hasErrors');
-
-  // Convertimos todo a String
-  return map.map((key, value) => MapEntry(key, value.toString()));
-}).toList();
-
-final listaMapeadapesos = pesos.map<Map<String, String>>((d) {
-  final map = d.toMap();
-
-  // Eliminamos campos que no queremos
-  map.remove('id');
-  map.remove('hasErrors');
-
-  // Convertimos todo a String
-  return map.map((key, value) => MapEntry(key, value.toString()));
-}).toList();
-
-
-        // Generar PDF
-        final generador = GeneradorReporteCalidad();
-        await generador.generarPdfDesdeDatos(
-          datos: datosRegistro,
-          defectos: listaMapeadadefectos,
-          pesos: listaMapeadapesos,
-        );
-
+     onPressed: () {
+      providerIPS.finishProcess();
+      print("se booro");
+        
         
       },
     ),
@@ -269,8 +233,7 @@ final listaMapeadapesos = pesos.map<Map<String, String>>((d) {
                                           // Llamar un método diferente de providerIPS según el índice
                                           switch (index) {
                                             case 0:
-                                              providerIPS.finishProcess();
-                                              providerColorante.clearData();
+                                              providerIPS.finishProcess();                                          
                                               providerdatosips.clearData();                                              break;
                                             case 1:
                                               //providerIPS.finishProcessI5();

@@ -1,22 +1,18 @@
 import 'package:flutter/material.dart';
 
-
-class EnviadoDialog extends StatefulWidget {
-  final int durationInSeconds;
+class EnviadoDialog extends StatelessWidget {
   final bool seEnvio;
 
-  const EnviadoDialog({super.key, this.durationInSeconds = 2, required this.seEnvio});
+  const EnviadoDialog({super.key, required this.seEnvio});
 
-  @override
-  _EnviadoDialogState createState() => _EnviadoDialogState();
-}
-
-class _EnviadoDialogState extends State<EnviadoDialog> {
-  @override
-  void initState() {
-    super.initState();
-    Future.delayed(Duration(seconds: widget.durationInSeconds), () {
-      if (mounted) {
+  static void mostrar(BuildContext context, bool seEnvio) {
+    showDialog(
+      context: context,
+      barrierDismissible: false,
+      builder: (context) => EnviadoDialog(seEnvio: seEnvio),
+    );
+    Future.delayed(const Duration(seconds: 2), () {
+      if (Navigator.of(context).canPop()) {
         Navigator.of(context).pop();
       }
     });
@@ -26,24 +22,39 @@ class _EnviadoDialogState extends State<EnviadoDialog> {
   Widget build(BuildContext context) {
     return AlertDialog(
       backgroundColor: Colors.white,
-      title: Text(widget.seEnvio ? "ENVIADO" : "ERROR DE ENVÍO"),
       content: Column(
         mainAxisSize: MainAxisSize.min,
         children: [
-          Text(widget.seEnvio ? "Registros enviados a la base de datos" : "No se pudo enviar los registros"),
+          Image.asset(seEnvio ? "images/check.gif" : "images/error.gif"),
           const SizedBox(height: 10),
-          Image.asset(widget.seEnvio ? "images/check.gif" : "images/error.gif"),
+          Text(
+            seEnvio ? "ENVIADO" : "ERROR DE ENVÍO",
+            style: const TextStyle(fontWeight: FontWeight.bold),
+          ),
+          const SizedBox(height: 5),
+          Text(seEnvio 
+              ? "Registros enviados correctamente" 
+              : "No se pudo enviar los registros"),
+
+          const SizedBox(height: 10),
+          ElevatedButton(
+            style: ElevatedButton.styleFrom(
+              backgroundColor: Colors.blue,
+              foregroundColor: Colors.black,              
+              textStyle: const TextStyle(fontWeight: FontWeight.bold),
+
+
+              shape: RoundedRectangleBorder(
+                borderRadius: BorderRadius.circular(20),
+              ),
+            ),
+            onPressed: () {
+              Navigator.of(context).pop();
+            },
+            child: const Text("Aceptar"),
+          ),
         ],
       ),
     );
   }
-}
-
-// Para mostrar el diálogo en cualquier parte del código:
-void mostrarEnviadoDialog(BuildContext context, {int durationInSeconds = 2, required bool seEnvio}) {
-  showDialog(
-    context: context,
-    barrierDismissible: false,
-    builder: (context) => EnviadoDialog(durationInSeconds: durationInSeconds, seEnvio: seEnvio),
-  );
 }

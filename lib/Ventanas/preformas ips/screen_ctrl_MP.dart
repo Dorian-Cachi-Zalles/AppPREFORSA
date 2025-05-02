@@ -1,5 +1,6 @@
 import 'package:control_de_calidad/Providers/BDpreformasIPS.dart';
 import 'package:control_de_calidad/Providers/Providerids.dart';
+import 'package:control_de_calidad/Ventanas/preformas%20ips/formulariocolorante.dart';
 import 'package:control_de_calidad/widgets/Alertas.dart';
 import 'package:control_de_calidad/widgets/boton_agregar.dart';
 import 'package:control_de_calidad/widgets/boton_guardar.dart';
@@ -132,7 +133,8 @@ class _ScreenListDatosMPIPSState extends State<ScreenListDatosMPIPS> {
   Widget build(BuildContext context) {
     final provider = Provider.of<DatosProviderPrefIPS>(context, listen: false);
     final providerregistro = Provider.of<IdsProvider>(context, listen: false);
-    final providercolorante = Provider.of<ColoranteIPSProvider>(context, listen: false);    
+    
+    final datoscoloranteips = provider.datoscoloranteipsList;   
     return Scaffold(
       body: Column(
         children: [
@@ -161,7 +163,7 @@ class _ScreenListDatosMPIPSState extends State<ScreenListDatosMPIPS> {
                   fontSize: 25,
                   iconSize: 30,
                   activeBgColors: [
-                    [Colors.blueAccent.withOpacity(0.6)],
+                    [!datoscoloranteips[0].hasSend ? const Color.fromARGB(255, 100, 145, 224) : Colors.green],
                     [Colors.redAccent]
                   ],
                   activeFgColor: Colors.black,
@@ -171,9 +173,18 @@ class _ScreenListDatosMPIPSState extends State<ScreenListDatosMPIPS> {
                   labels: ['SI', ''],
                   icons: [null, Icons.close],
                   onToggle: (index) {
-                    if (index == 0 && providercolorante.seenvia) {                   
+                    if (index == 0 && !datoscoloranteips[0].hasSend ) {                                    
 
-                      _showBottomSheet();
+                        Navigator.push(
+                          context,
+                          MaterialPageRoute(
+                            builder: (context) => EditDatosColoranteIPSForm(
+                              id: 1,
+                              DatoscoloranteIPS: datoscoloranteips[0],
+                            ),
+                          ),
+                        );                  
+
                     }
                   },
                 ),
@@ -222,8 +233,7 @@ class _ScreenListDatosMPIPSState extends State<ScreenListDatosMPIPS> {
                         ['Identif: ', 1, dtdatosmpips.Identif],
                         ['CantidadBolsones: ', 1, dtdatosmpips.CantidadBolsones.toString()],
                         ['Dosificacion: ', 1, dtdatosmpips.Dosificacion.toString()],
-                        ['Humedad: ', 1, dtdatosmpips.Humedad.toString()],
-                        ['Conformidad: ', 5, dtdatosmpips.Conformidad],
+                        ['Humedad: ', 1, dtdatosmpips.Humedad.toString()],                        
                       ]),
                       hasErrors: dtdatosmpips.hasErrors,
                       hasSend: dtdatosmpips.hasSend,
@@ -363,6 +373,7 @@ class _EditDatosMPIPSFormState extends State<EditDatosMPIPSForm> {
         child: SingleChildScrollView(
           child: FormularioGeneralDatosMPIPS(
               formKey: _formKey,
+              
               widget: widget,
               dropOptions: dropOptionsDatosMPIPS,
             ),),),),
@@ -384,15 +395,16 @@ class _EditDatosMPIPSFormState extends State<EditDatosMPIPSForm> {
     bool enviado = await provider.enviarDatosAPIDatosMPIPS(widget.id);
 
     if (!enviado) {
-    const EnviadoDialog(seEnvio: false,); 
+    EnviadoDialog.mostrar(context, false);
 
      
     } else {
       final updatedDatitoEnviado = obtenerDatosActualizados(hasSend: true);
       await provider.updateDatosMPIPS(widget.id, updatedDatitoEnviado);
-      const EnviadoDialog(seEnvio: true,); 
+      EnviadoDialog.mostrar(context, true);
       Navigator.pop(context);
     }
+  
   },
 )        
           ]));
@@ -439,6 +451,7 @@ class FormularioGeneralDatosMPIPS extends StatelessWidget {
   Widget build(BuildContext context) {
     return FormBuilder(
       key: _formKey,
+      autovalidateMode: AutovalidateMode.disabled,
       child: Column(
         children: [
 

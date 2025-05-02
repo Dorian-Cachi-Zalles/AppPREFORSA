@@ -146,14 +146,14 @@ class _GradientExpandableCardState extends State<GradientExpandableCard>
                           children: [
                             CircleAvatar(
                               radius: 20,
-                              backgroundColor: widget.hasErrors
+                              backgroundColor: widget.hasSend? const Color.fromARGB(255, 35, 184, 69) : widget.hasErrors
                                   ? const Color.fromARGB(255, 199, 64, 54)
                                   : Colors.blueAccent,
                             ),
                             Icon(
-                              widget.hasErrors
-                                  ? Icons.priority_high
-                                  : Icons.check,
+                              widget.hasSend ? Icons.check :widget.hasErrors
+                                  ? Icons.close_sharp
+                                  : Icons.priority_high,
                               size: 24,
                               color: Colors.white,
                             ),

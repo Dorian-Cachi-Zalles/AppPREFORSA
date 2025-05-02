@@ -1,5 +1,6 @@
 import 'dart:convert';
 import 'package:control_de_calidad/Configuraciones/Configuraciones.dart';
+import 'package:control_de_calidad/Providers/Providerids.dart';
 import 'package:control_de_calidad/widgets/dropdownformulario.dart';
 import 'package:control_de_calidad/widgets/textsimpleform.dart';
 import 'package:control_de_calidad/widgets/titulos.dart';
@@ -11,8 +12,8 @@ import 'package:http/http.dart' as http;
 
 
 class ColoranteIPSProvider with ChangeNotifier {
-  
-  final String baseUrl = '${Config.baseUrl}/coloranteIPS';
+    
+  final String baseUrl = '${Config.baseUrl}/Colorante';
   SharedPreferences? _prefs;
   bool isLoading = true; // Nueva bandera para controlar la carga
   bool seenvia =true;
@@ -26,12 +27,11 @@ class ColoranteIPSProvider with ChangeNotifier {
   
 
 
-  ColoranteIPSProvider() {
-    _initPrefs();
-  }
+  
 
-  Future<void> _initPrefs() async {
+  Future<void> _initPrefs(BuildContext context) async {
     _prefs = await SharedPreferences.getInstance();
+      ID_regis = (await Provider.of<IdsProvider>(context, listen: false).getNumeroById(1))!;
     _loadData();
     isLoading = false; // Indicar que los datos ya se cargaron
     notifyListeners(); 
@@ -39,16 +39,18 @@ class ColoranteIPSProvider with ChangeNotifier {
 
   void _loadData() {
     if (_prefs == null) return;
-    seenvia = _prefs!.getBool("miBooleano") ?? true;
+    seenvia = _prefs!.getBool("seenvia") ?? true;
     Colorante = _prefs!.getString("Colorante") ?? "";
     Codigo= _prefs!.getString("Codigo") ?? "";
     KL =_prefs!.getString("KL") ?? "";
     BP = _prefs!.getString("BP") ?? "";
     Dosificacion = _prefs!.getDouble("Dosificacion") ?? 0.0;
     CantidadBolsones = _prefs!.getInt("CantidadBolsones") ?? 1;
-    ID_regis = _prefs!.getInt("CantidadBolsones") ?? 1;    
+    ID_regis = ID_regis;    
     
   }
+
+  
 
   Future<void> updateData({bool?seenvia,
   String?Colorante,
@@ -92,35 +94,62 @@ class ColoranteIPSProvider with ChangeNotifier {
     if (ID_regis != null) {
       await _prefs!.setInt("ID_regis", ID_regis);
       this.ID_regis = ID_regis;
-    }
+    } 
 
     notifyListeners(); 
   }
 
-  Future<void> updateDatabase() async {
-    try {
-      final response = await http.post(
-        Uri.parse(baseUrl),
-        headers: {"Content-Type": "application/json"},
-        body: json.encode({
-          "Colorante": Colorante,
-          "Codigo": Codigo,
-          "KL": KL,
-          "BP": BP,
-          "Dosificacion": Dosificacion,
-          "CantidadBolsones": CantidadBolsones,
-          "ID_regis":ID_regis,        
-          
-        }),
-      );
-    
-      if (response.statusCode != 200) {
-        
+Future<void> updateDatabase(BuildContext context) async {
+  try {
+    final response = await http.post(
+      Uri.parse(baseUrl),
+      headers: {"Content-Type": "application/json"},
+      body: json.encode({
+        "Colorante": Colorante,
+        "Codigo": Codigo,
+        "KL": KL,
+        "BP": BP,
+        "Dosificacion": Dosificacion,
+        "CantidadBolsones": CantidadBolsones,
+        "ID_regis": ID_regis,
+      }),
+    );
+
+    print("Código de respuesta: ${response.statusCode}");
+    print("Cuerpo de respuesta: ${response.body}");
+
+    if (response.statusCode >= 200 && response.statusCode < 300) {
+      await updateData(seenvia: false);
+      if (context.mounted) {
+        ScaffoldMessenger.of(context).showSnackBar(
+          SnackBar(content: Text('Datos enviados correctamente')),
+        );
       }
-    } catch (e) {
-     
+      print("seenvia actualizado a false");
+    } else {
+      await updateData(seenvia: true);
+      if (context.mounted) {
+        ScaffoldMessenger.of(context).showSnackBar(
+          SnackBar(content: Text('Error al enviar datos: ${response.statusCode}')),
+        );
+      }
+      print("Error de servidor, seenvia sigue en true");
+    }
+  } catch (e) {
+    print("Excepción atrapada: $e");
+    await updateData(seenvia: true);
+    if (context.mounted) {
+      ScaffoldMessenger.of(context).showSnackBar(
+        SnackBar(content: Text('Excepción al enviar datos: $e')),
+      );
     }
   }
+}
+
+
+
+   
+
 
   Future<void> clearData() async {
     if (_prefs == null) return;
@@ -135,7 +164,11 @@ class ColoranteIPSProvider with ChangeNotifier {
     ID_regis = 0;
     notifyListeners();
   }
+
+  
 }
+
+
 
 class FormularioColoranteIPS extends StatefulWidget {
   @override
@@ -151,14 +184,18 @@ class _FormularioColoranteIPSState extends State<FormularioColoranteIPS> {
     'CantidadBolsones': [1, 2, 3, 4, 5, 6],
   };
 
+  
+
   @override
-  Widget build(BuildContext context) {
+  Widget build(BuildContext context) {    
+    
     return FutureBuilder(
-      future: Provider.of<ColoranteIPSProvider>(context, listen: false)._initPrefs(),
+      future: Provider.of<ColoranteIPSProvider>(context, listen: false)._initPrefs(context),
       builder: (context, snapshot) {
         return Consumer<ColoranteIPSProvider>(
           builder: (context, provider, child) {
             return Scaffold(
+              
               body: GestureDetector(
                 onTap: () {
                   // Cerrar el teclado cuando se toque fuera de un campo
@@ -273,19 +310,19 @@ class _FormularioColoranteIPSState extends State<FormularioColoranteIPS> {
                             TextButton.icon(
                                         style: TextButton.styleFrom(
                       foregroundColor: Colors.black,
-                      backgroundColor: Colors.blueAccent.withOpacity(0.2), // celeste plomo
+                      backgroundColor: Colors.blueAccent,// celeste plomo
                       padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 6),
                                          
                       shape: RoundedRectangleBorder(
                         borderRadius: BorderRadius.circular(8),
                       ),
                                         ),
-                                        onPressed: () {
-                      provider.updateData(seenvia: false);
-                      provider.updateDatabase();
-                      Navigator.of(context)
-                                                  .pop();
-                                        },
+                                        onPressed: ()  {                                           
+                                          provider.updateDatabase(context);
+                                          Navigator.pop(context);                                                                               
+  
+  
+},
                                         icon: const Icon(Icons.send, size: 20),
                                         label: const Text(
                       'Enviar Colorante',

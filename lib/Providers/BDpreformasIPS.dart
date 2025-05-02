@@ -1,5 +1,6 @@
 import 'dart:convert';
 import 'package:control_de_calidad/Configuraciones/Configuraciones.dart';
+import 'package:control_de_calidad/Ventanas/preformas%20ips/formulariocolorante.dart';
 import 'package:control_de_calidad/Ventanas/preformas%20ips/screen_ctrl_MP.dart';
 import 'package:control_de_calidad/Ventanas/preformas%20ips/screen_ctrl_pesos.dart';
 import 'package:control_de_calidad/Ventanas/preformas%20ips/screen_defectos.dart';
@@ -19,6 +20,7 @@ class DatosProviderPrefIPS with ChangeNotifier {
   final String tableDatosMPIPS = 'datosMpIps';
   final String tableDatosDEFIPS = 'datosDefIps';
   final String tableDatosTEMPIPS = 'datosTempips';
+  final String tableDatosColoranteIPS = 'DatoscoloranteIPS';
 
  
   List<DatosPROCEIPS> _datosproceipsList = [];
@@ -26,6 +28,7 @@ class DatosProviderPrefIPS with ChangeNotifier {
   List<DatosMPIPS> _datosmpipsList = [];
   List<DatosDEFIPS> _datosdefipsList = [];
   List<DatosTEMPIPS> _datostempipsList = [];
+  List<DatosColoranteIPS> _datoscoloranteipsList = [];
   
 
   List<DatosPROCEIPS> get datosproceipsList => List.unmodifiable(_datosproceipsList);
@@ -33,6 +36,7 @@ class DatosProviderPrefIPS with ChangeNotifier {
   List<DatosMPIPS> get datosmpipsList => List.unmodifiable(_datosmpipsList);
   List<DatosDEFIPS> get datosdefipsList => List.unmodifiable(_datosdefipsList);
   List<DatosTEMPIPS> get datostempipsList => List.unmodifiable(_datostempipsList);
+  List<DatosColoranteIPS> get datoscoloranteipsList => List.unmodifiable(_datoscoloranteipsList);
 
   DatosProviderPrefIPS() {
     _initDatabase();
@@ -128,6 +132,20 @@ class DatosProviderPrefIPS with ChangeNotifier {
         Tcuello TEXT NOT NULL
       )
     ''');
+    await db.execute('''
+      CREATE TABLE $tableDatosColoranteIPS (
+        id INTEGER PRIMARY KEY AUTOINCREMENT,
+        hasErrors INTEGER NOT NULL,
+        hasSend INTEGER NOT NULL,
+        idregistro INTEGER NOT NULL,
+        Colorante TEXT NOT NULL,
+        Codigo TEXT NOT NULL,
+        KL TEXT NOT NULL,
+        BP TEXT NOT NULL,
+        Dosificacion REAL NOT NULL,
+        CantidadBolsone INTEGER NOT NULL
+      )
+    ''');
   } 
 
   Future<void> _loadData() async { 
@@ -146,10 +164,38 @@ class DatosProviderPrefIPS with ChangeNotifier {
 
     final tempmaps = await _db.query(tableDatosTEMPIPS);
     _datostempipsList = tempmaps.map((map) => DatosTEMPIPS.fromMap(map)).toList();
+
+      final maps = await _db.query(tableDatosColoranteIPS);
+  _datoscoloranteipsList = maps.map((map) => DatosColoranteIPS.fromMap(map)).toList();
+
+  // Si no hay datos, agrega uno automáticamente
+  if (_datoscoloranteipsList.isEmpty) {     
     
-    notifyListeners();
+      final nuevo = DatosColoranteIPS(
+        hasErrors: true,
+        hasSend: false,
+        idregistro: 0,
+        Colorante: 'Microbatch azul',
+        Codigo: '',
+        KL: '',
+        BP: '',
+        Dosificacion: 0,
+        CantidadBolsone: 1,
+      );
+
+      await addDatosColoranteIPS(nuevo); // Asumiendo que esta función guarda y notifica
+    
+  }
+
+  notifyListeners();
   }
   
+   Future<void> addDatosColoranteIPS(DatosColoranteIPS nuevoDato) async {
+    final id = await _db.insert(tableDatosColoranteIPS, nuevoDato.toMap());
+    _datoscoloranteipsList.add(nuevoDato.copyWith(id: id));
+    notifyListeners();
+  }
+
   Future<void> addDatosMPIPS(DatosMPIPS nuevoDato) async {
     final id = await _db.insert(tableDatosMPIPS, nuevoDato.toMap());
     _datosmpipsList.add(nuevoDato.copyWith(id: id));
@@ -179,7 +225,19 @@ class DatosProviderPrefIPS with ChangeNotifier {
     notifyListeners();
   }
 
-  
+  Future<void> updateDatosColoranteIPS(int id, DatosColoranteIPS updatedDato) async {
+    final index = _datoscoloranteipsList.indexWhere((d) => d.id == id);
+    if (index != -1) {
+      await _db.update(
+        tableDatosColoranteIPS,
+        updatedDato.copyWith(id: id).toMap(),
+        where: 'id = ?',
+        whereArgs: [id],
+      );
+      _datoscoloranteipsList[index] = updatedDato.copyWith(id: id);
+      notifyListeners();
+    }
+  }  
 
   Future<void> updateDatosTEMPIPS(int id, DatosTEMPIPS updatedDato) async {
     final index = _datostempipsList.indexWhere((d) => d.id == id);
@@ -444,10 +502,88 @@ Future<void> finishProcess() async {
   await _db.delete(tableDatosTEMPIPS);
   await _db.execute("DELETE FROM sqlite_sequence WHERE name='$tableDatosTEMPIPS'");
   _datostempipsList.clear();
-  
-  
+  // Restablecer los valores predeterminados en la tabla Colorante
+  await _db.update(
+    tableDatosColoranteIPS,
+    {
+      'hasErrors': true,
+      'hasSend': false,
+      'idregistro': 0,
+      'Colorante': 'Microbatch azul',
+      'Codigo': '',
+      'KL': '',
+      'BP': '',
+      'Dosificacion': 0,
+      'CantidadBolsone': 1,
+    },
+    where: 'id = ?', // Ajusta el ID si es diferente
+    whereArgs: [1], // Usar el ID correcto
+  );
+
+  // Limpiar la lista en memoria
+  _datoscoloranteipsList[0] = DatosColoranteIPS(
+    hasErrors: true,
+    hasSend: false,
+    idregistro: 0,
+    Colorante: 'Microbatch azul',
+    Codigo: '',
+    KL: '',
+    BP: '',
+    Dosificacion: 0,
+    CantidadBolsone: 1,
+  );
+
   notifyListeners();
 }
+
+Future<bool> enviarDatosAPIDatosColoranteIPS(int id) async {
+    final url = Uri.parse("${Config.baseUrl}/Colorante");
+
+    // Buscar el dato actualizado en SQLite
+    final index = _datoscoloranteipsList.indexWhere((d) => d.id == id);
+    if (index == -1) {
+      print("❌ Error: No se encontró el dato con ID $id en SQLite");
+      return false;
+    }
+
+    final DatosColoranteIPS dato = _datoscoloranteipsList[index];
+
+    // Convertir a JSON sin 'id' y 'hasErrors'
+    final Map<String, dynamic> datosJson = {
+    "ID_regis": dato.idregistro,
+      "Colorante": dato.Colorante,
+      "Codigo": dato.Codigo,
+      "KL": dato.KL,
+      "BP": dato.BP,
+      "Dosificacion": dato.Dosificacion,
+      "CantidadBolsone": dato.CantidadBolsone
+    };
+
+    print("📤 Enviando datos a la API: $datosJson");
+
+    try {
+      final response = await http.post(
+        url,
+        headers: {"Content-Type": "application/json"},
+        body: jsonEncode(datosJson),
+      );
+
+      print(
+          "📥 Respuesta del servidor: ${response.statusCode} - ${response.body}");
+
+    
+
+      if (response.statusCode == 201) {
+        return true;
+      } else {
+        print("❌ Error al enviar datos. Código: ${response.statusCode}");
+        return false;
+      }
+    } catch (e) {
+      print("❌ Error de conexión: $e");
+      return false;
+    }
+  }
 
 Future<bool> enviarDatosAPIDatosMPIPS(int id) async {
     final url = Uri.parse("${Config.baseUrl}/MPips");
@@ -557,7 +693,7 @@ Future<bool> enviarDatosAPIPeso(int id) async {
     final Map<String, dynamic> datosJson = {
       "Hora": dato.Hora,
       "Defectos": dato.Defectos,
-      "Criticidad": jsonEncode(dato.Criticidad),
+      "Criticidad": dato.Criticidad,
       "CSeccionDefecto": dato.CSeccionDefecto,
       "DefectosEncontrados": dato.DefectosEncontrados,
       "Fase": dato.Fase,

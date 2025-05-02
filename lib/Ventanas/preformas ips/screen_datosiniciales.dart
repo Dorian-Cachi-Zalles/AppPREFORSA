@@ -233,13 +233,12 @@ class RegistroIPSProvider with ChangeNotifier {
           "CantidadtotalKg": CantidadtotalKg,
           "Conformidad": Conformidad ? 1 : 0,
         }),
-      );
-      const EnviadoDialog(seEnvio: true,);       
+      );           
       if (response.statusCode != 200) { 
-        const EnviadoDialog(seEnvio: false,);      
+              
       }
     } catch (e) {
-      const EnviadoDialog(seEnvio: false,); 
+      
     }
   }
 
@@ -352,6 +351,7 @@ class _FormularioRegistroIPSState extends State<FormularioRegistroIPS> {
   } 
   void updatecantidpiz(BuildContext context) {
     final formState = _formKey.currentState;
+    
 
     if (formState != null) {
       // Obtén los valores actuales de PesoTara y PesoNeto
@@ -627,7 +627,7 @@ CheckboxSimple(
                 padding: const EdgeInsets.all(12),
                 child: FormBuilder(
                   key: _formKey,
-                  
+                  autovalidateMode: AutovalidateMode.disabled,
                   child: Column(
                     crossAxisAlignment: CrossAxisAlignment.start,
                     children: [

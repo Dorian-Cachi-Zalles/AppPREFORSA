@@ -5,7 +5,7 @@ import 'package:http/http.dart' as http;
 
 
 class Config {
-  static String baseUrl = "http://192.168.137.1:8888/api";
+  static String baseUrl = "http://192.168.0.100:8000/api";
 }
 
 

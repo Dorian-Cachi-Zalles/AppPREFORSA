@@ -256,11 +256,11 @@ class _EditDatosPROCEIPSFormState extends State<EditDatosPROCEIPSForm> {
     bool enviado = await provider.enviarDatosAPIDatosPROCEIPS(widget.id);
 
     if (!enviado) {
-     const EnviadoDialog(seEnvio: false,);       
+     EnviadoDialog.mostrar(context, false);      
     } else {
       final updatedDatitoEnviado = obtenerDatosActualizados(hasSend: true);
       await provider.updateProcesos(widget.id, updatedDatitoEnviado);
-      const EnviadoDialog(seEnvio: true,); 
+      EnviadoDialog.mostrar(context, true); 
       Navigator.pop(context);
     }
   },
