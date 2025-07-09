@@ -1,59 +1,86 @@
-import 'package:control_de_calidad/Providers/BDpreformasIPS.dart';
+import 'package:control_de_calidad/Providers/ProviderI6.dart';
 import 'package:control_de_calidad/Providers/Providerids.dart';
-import 'package:control_de_calidad/Ventanas/preformas%20ips/form_coloranteips.dart';
 import 'package:control_de_calidad/Ventanas/preformas%20ips/screen_datosiniciales.dart';
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
 
 class ScreenEstadoRegistros extends StatelessWidget {
+  
   const ScreenEstadoRegistros({super.key});
+  
 
   @override
   Widget build(BuildContext context) {
     final providerregistro = Provider.of<IdsProvider>(context);
     final providerIPS = Provider.of<DatosProviderPrefIPS>(context);
     final providerdatosips= Provider.of<RegistroIPSProvider>(context);
+    DateTime? _ultimoEnvio;
 
 
     return Scaffold(
-      appBar: AppBar(
-        title: const Text('Estado de Registros'),
-        centerTitle: true,
-        backgroundColor: Colors.blueAccent.shade100,
-
-        elevation: 0,
-        actions: [           
-    IconButton(
-      icon: const Icon(Icons.picture_as_pdf),
-      tooltip: 'Generar PDF',
-     onPressed: () {
-      providerIPS.finishProcess();
-      print("se booro");
-        
-        
-      },
-    ),
-  ],
-          
-        
-      ),
+      
       body: Column(
+        crossAxisAlignment: CrossAxisAlignment.start,
         children: [
           Container(
-            padding: const EdgeInsets.all(16),
-            decoration: BoxDecoration(
+            width: MediaQuery.of(context).size.width,
+            decoration: const BoxDecoration(
               gradient: LinearGradient(
-                colors: [Colors.blueAccent.shade100, Colors.blue.shade200],
+                colors: [
+                  Color(0xFF486581), // Color gris azulado
+                  Color(0xFF8E9AB0), // Color lavanda
+                ],
+                begin: Alignment.topLeft,
+                end: Alignment.bottomRight,
               ),
             ),
-            child: const Text(
-              'En esta sección se supervisa y controla el estado de los registros, permitiendo su apertura y cierre según el proceso',
-              style: TextStyle(
-                fontSize: 14,
-                color: Colors.white,
-                fontWeight: FontWeight.bold,
-              ),
-              textAlign: TextAlign.center,
+            child: Column(                
+              children: [
+                const SizedBox(height: 35,),
+                Padding(
+                  padding: const EdgeInsets.all(8.0),
+                  child: Center(
+                    child: Row(
+                      mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                      children: [
+                        Container(
+                          decoration: const BoxDecoration(
+                            color: Colors.white,
+                            shape: BoxShape.circle,
+                          ),
+                          child: IconButton(
+                            color: Colors.black,
+                            icon: const Icon(Icons.arrow_back, size: 32.0),
+                            onPressed: () {
+                              Navigator.pop(context);                   
+                            },
+                          ),
+                        ),
+                        const SizedBox(width: 30,),
+                        const Text(
+                        'Estado de Registros',
+                        style: TextStyle(
+                          fontSize: 24.0,
+                          color: Color.fromARGB(255, 230, 232, 234), // Color gris azulado
+                        ),
+                      ),
+                      const Spacer()
+                      ],
+                    ),
+                  ),
+                ),
+                  
+                  const Padding(
+                    padding: EdgeInsets.all(16),
+                    child: Text(
+                            'En esta sección se supervisa y controla el estado de los registros, permitiendo su apertura y cierre según el proceso',
+                            style: TextStyle(
+                              fontSize: 16.0,
+                              color: Colors.white70, // Color gris azulado
+                            ),
+                          ),
+                  ),
+              ],
             ),
           ),
           Expanded(
@@ -62,45 +89,66 @@ class ScreenEstadoRegistros extends StatelessWidget {
               itemCount: providerregistro.idsRegistrosList.length,
               itemBuilder: (context, index) {
                 final datos = providerregistro.idsRegistrosList[index];
-
+                  
                 final List<Map<String, dynamic>> defectDescriptions = [
                   {
-                    'title': 'IPS-400',
-                    'description': 'Preformas IPS(Pequeñas)',
+                    'title': 'I6',
+                    'description': 'Preformas I6(Pequeñas)',
                     'color': Colors.teal,
+                    'Foto': 'images/I6.png',
+                    'Foto2': 'images/I62.png',
                   },
                   {
-                    'title': 'I5',
-                    'description': 'Preformas I5(Grandes)',
-                    'color': Colors.indigo,
+                    'title': 'I9',
+                    'description': 'Preformas I6(Pequeñas)',
+                    'color': Colors.redAccent[700],
+                    'Foto': 'images/I9.png',
+                    'Foto2': 'images/I92.png',
+                  },
+                  {
+                    'title': 'COLORACAP',
+                    'description': 'Impresion de Tapas',
+                    'color': Colors.lime[800]!,
+                    'Foto': 'images/coloracap.png',
+                    'Foto2': 'images/coloracap2.png',
                   },
                   {
                     'title': 'CCM',
                     'description': 'Tapas 2,5 cm',
                     'color': Colors.deepPurple,
-                  },
-                  {
-                    'title': 'COLORACAP',
-                    'description': 'Impresion de Tapas',
-                    'color': Colors.brown,
-                  },
-                  {
-                    'title': 'YUTZUMI',
-                    'description': 'Botellas',
-                    'color': Colors.deepOrange,
-                  },
-                  {
-                    'title': 'IT 2 HX-258',
-                    'description': 'Tapas Bidon',
-                    'color': Colors.green,
+                    'Foto': 'images/CCM.png',
+                    'Foto2': 'images/CCM2.png',
                   },
                   {
                     'title': 'SOPLADO',
                     'description': 'Tapas 6 cm y Azas',
                     'color': Colors.blueGrey,
+                    'Foto': 'images/soplado.png',
+                    'Foto2': 'images/soplado2.png',
                   },
+                  {
+                    'title': 'I5',
+                    'description': 'Preformas I5(Grandes)',
+                    'color': Colors.indigo,
+                    'Foto': 'images/I5.png',
+                    'Foto2': 'images/I52.png',
+                  },                           
+                  {
+                    'title': 'IT 2 HX-258',
+                    'description': 'Tapas Bidon',
+                    'color': Colors.green,
+                    'Foto': 'images/IT.png',
+                    'Foto2': 'images/IT2.png',
+                  },
+                  {
+                    'title': 'YUTZUMI',
+                    'description': 'Tapas Bidon',
+                    'color': Colors.deepOrange,
+                    'Foto': 'images/I6.png',
+                    'Foto2': 'images/I62.png',
+                  },                  
                 ];
-
+                  
                 return Container(
                   margin: const EdgeInsets.only(bottom: 16),
                   padding: const EdgeInsets.all(16),
@@ -119,15 +167,14 @@ class ScreenEstadoRegistros extends StatelessWidget {
                     children: [
                       CircleAvatar(
                         radius: 30,
-                        backgroundColor:
-                            datos.estado ? Colors.white : Colors.black26,
-                        child: Icon(
-                          datos.estado
-                              ? Icons.edit_note_rounded
-                              : Icons.edit_off,
-                          color: defectDescriptions[index]['color'],
-                          size: 30,
+                        backgroundColor: datos.estado ? Colors.white : Colors.black26,
+                        backgroundImage: AssetImage(
+                           datos.estado
+      ? defectDescriptions[index]['Foto']
+      : defectDescriptions[index]['Foto2'],
+                                                      
                         ),
+                        
                       ),
                       const SizedBox(width: 16),
                       Expanded(
@@ -157,14 +204,23 @@ class ScreenEstadoRegistros extends StatelessWidget {
                           ],
                         ),
                       ),
+                      
                       Builder(
                         builder: (context) => ElevatedButton(
-                          onPressed: () async {
+                          onPressed: () async {                            
+                  // Verificar si ya se hizo clic recientemente
+                  if (_ultimoEnvio != null &&
+                        DateTime.now().difference(_ultimoEnvio!) < Duration(seconds: 2)) {
+                    return;
+                  }
+                  
+                  // Actualizar momento del último clic válido
+                  _ultimoEnvio = DateTime.now();
                             if (!datos.estado) {
                               // Estado es false, intentamos abrir y obtener un ID con el método adecuado
                               try {
                                 int messageId;
-
+                  
                                 // Seleccionamos el método adecuado según el índice
                                 switch (index) {
                                   case 0:
@@ -189,17 +245,20 @@ class ScreenEstadoRegistros extends StatelessWidget {
                                   case 6:
                                     messageId = 70;
                                     break;
+                                  case 7:
+                                    messageId = 70;
+                                    break;
                                   default:
                                     throw Exception("Índice fuera de rango");
                                 }
-
+                  
                                 if (context.mounted) {
                                   final updatedDatito = datos.copyWith(
                                     numero: messageId, // Guarda el ID obtenido
                                     estado:
                                         true, // Cambia el estado a "abierto"
                                   );
-
+                  
                                   providerregistro.updateDatito(
                                       datos.id!, updatedDatito);
                                 }
@@ -251,6 +310,9 @@ class ScreenEstadoRegistros extends StatelessWidget {
                                               //providerIPS.finishProcessIT2HX258();
                                               break;
                                             case 6:
+                                              //providerIPS.finishProcessSoplado();
+                                              break;
+                                            case 7:
                                               //providerIPS.finishProcessSoplado();
                                               break;
                                             default:

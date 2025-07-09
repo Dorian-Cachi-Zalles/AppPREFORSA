@@ -7,6 +7,7 @@ class CustomInputField extends StatelessWidget {
   final String label;
   final bool isRequired;
   final bool isNumeric;
+  final bool isreadonly;
   final String valorInicial;
   final double? min;
   final double? max;
@@ -23,7 +24,7 @@ class CustomInputField extends StatelessWidget {
     this.min,
     this.max,
     this.maxLength,
-    this.onChanged,
+    this.onChanged, this.isreadonly = false,
   }) : super(key: key);
 
   @override
@@ -48,8 +49,8 @@ class CustomInputField extends StatelessWidget {
           children: [
             FormBuilderTextField(
               name: name,
-              initialValue: valorInicial,              
-              onChanged: onChanged,
+              initialValue: valorInicial,
+              readOnly: isreadonly,              onChanged: onChanged,
               keyboardType: TextInputType.text,
               autovalidateMode: AutovalidateMode.onUserInteraction,
                decoration: InputDecoration(

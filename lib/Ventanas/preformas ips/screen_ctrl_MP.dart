@@ -1,6 +1,5 @@
-import 'package:control_de_calidad/Providers/BDpreformasIPS.dart';
+import 'package:control_de_calidad/Providers/ProviderI6.dart';
 import 'package:control_de_calidad/Providers/Providerids.dart';
-import 'package:control_de_calidad/Ventanas/preformas%20ips/formulariocolorante.dart';
 import 'package:control_de_calidad/widgets/Alertas.dart';
 import 'package:control_de_calidad/widgets/boton_agregar.dart';
 import 'package:control_de_calidad/widgets/boton_guardar.dart';
@@ -12,8 +11,7 @@ import 'package:control_de_calidad/widgets/titulos.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_form_builder/flutter_form_builder.dart';
 import 'package:provider/provider.dart';
-import 'package:toggle_switch/toggle_switch.dart';
-import 'package:control_de_calidad/Ventanas/preformas%20ips/form_coloranteips.dart';
+
 
 class DatosMPIPS {
   final int? id;
@@ -123,6 +121,89 @@ class DatosMPIPS {
   }
 }
 
+
+class DatosColoranteIPS {
+  final int? id;
+  final bool hasErrors;
+  final bool hasSend;
+  final int idregistro;
+  final String Colorante;
+  final String Codigo;
+  final String KL;
+  final String BP;
+  final double Dosificacion;
+  final int CantidadBolsone;
+
+  // Constructor de la clase
+  const DatosColoranteIPS({
+    this.id,
+    required this.hasErrors,
+    required this.hasSend,
+    required this.idregistro,
+    required this.Colorante,
+    required this.Codigo,
+    required this.KL,
+    required this.BP,
+    required this.Dosificacion,
+    required this.CantidadBolsone
+  });
+
+  // Factory para crear una instancia desde un Map
+  factory DatosColoranteIPS.fromMap(Map<String, dynamic> map) {
+    return DatosColoranteIPS(
+      id: map['id'] as int?,
+      hasErrors: map['hasErrors'] == 1,
+      hasSend: map['hasSend'] == 1,
+      idregistro: map['idregistro'] as int,
+      Colorante: map['Colorante'] as String,
+      Codigo: map['Codigo'] as String,
+      KL: map['KL'] as String,
+      BP: map['BP'] as String,
+      Dosificacion: map['Dosificacion'] as double,
+      CantidadBolsone: map['CantidadBolsone'] as int
+    );
+  }
+
+  // Método para convertir la instancia a Map
+  Map<String, dynamic> toMap() {
+    return {
+      if (id != null) 'id': id,
+      'hasErrors': hasErrors ? 1 : 0,
+      'hasSend': hasSend ? 1 : 0,
+      'idregistro': idregistro,
+      'Colorante': Colorante,
+      'Codigo': Codigo,
+      'KL': KL,
+      'BP': BP,
+      'Dosificacion': Dosificacion,
+      'CantidadBolsone': CantidadBolsone
+    };
+  }
+
+  // Método copyWith
+  DatosColoranteIPS copyWith({
+    int? id,
+    bool? hasErrors,
+    bool? hasSend,
+    int? idregistro,
+    String? Colorante, String? Codigo, String? KL, String? BP, double? Dosificacion, int? CantidadBolsone
+  }) {
+    return DatosColoranteIPS(
+      id: id ?? this.id,
+      hasErrors: hasErrors ?? this.hasErrors,
+      hasSend: hasSend ?? this.hasSend,
+      idregistro: idregistro ?? this.idregistro,
+      Colorante: Colorante ?? this.Colorante,
+      Codigo: Codigo ?? this.Codigo,
+      KL: KL ?? this.KL,
+      BP: BP ?? this.BP,
+      Dosificacion: Dosificacion ?? this.Dosificacion,
+      CantidadBolsone: CantidadBolsone ?? this.CantidadBolsone
+    );
+  }
+}
+
+
 class ScreenListDatosMPIPS extends StatefulWidget {
   @override
   State<ScreenListDatosMPIPS> createState() => _ScreenListDatosMPIPSState();
@@ -132,68 +213,122 @@ class _ScreenListDatosMPIPSState extends State<ScreenListDatosMPIPS> {
   @override
   Widget build(BuildContext context) {
     final provider = Provider.of<DatosProviderPrefIPS>(context, listen: false);
-    final providerregistro = Provider.of<IdsProvider>(context, listen: false);
-    
-    final datoscoloranteips = provider.datoscoloranteipsList;   
+    final providerregistro = Provider.of<IdsProvider>(context, listen: false);       
     return Scaffold(
       body: Column(
         children: [
-          const Row(
-              mainAxisAlignment: MainAxisAlignment.center,
-              crossAxisAlignment: CrossAxisAlignment.center,
-              children: [
-                Text(
-                  textAlign: TextAlign.center,
-                  '¿Se tiene una mezcla con \ncolorante o aditivo?',
-                  style: TextStyle(
-                    fontWeight: FontWeight.bold,
-                    fontSize: 18,
+          Padding(
+            padding: const EdgeInsets.only(top: 16,left: 10, right: 10),
+            child: Row(
+                mainAxisAlignment: MainAxisAlignment.center,
+                crossAxisAlignment: CrossAxisAlignment.center,
+                children: [
+                  Text(
+                    textAlign: TextAlign.center,
+                    '¿Se tiene una mezcla con \ncolorante o aditivo?',
+                    style: TextStyle(
+                      fontWeight: FontWeight.bold,
+                      fontSize: 18,
+                    ),
                   ),
-                ),
-              ],
-            ),
-            const SizedBox(height: 20),
-            Row(
-              mainAxisAlignment: MainAxisAlignment.center,
-              children: [
-                ToggleSwitch(
-                  customWidths: [120.0, 70.0],
-                  cornerRadius: 20.0,
-                  minHeight: 50,
-                  fontSize: 25,
-                  iconSize: 30,
-                  activeBgColors: [
-                    [!datoscoloranteips[0].hasSend ? const Color.fromARGB(255, 100, 145, 224) : Colors.green],
-                    [Colors.redAccent]
-                  ],
-                  activeFgColor: Colors.black,
-                  inactiveBgColor: Colors.grey,
-                  inactiveFgColor: Colors.black,
-                  totalSwitches: 2,
-                  labels: ['SI', ''],
-                  icons: [null, Icons.close],
-                  onToggle: (index) {
-                    if (index == 0 && !datoscoloranteips[0].hasSend ) {                                    
+                  const SizedBox(width: 10),                  
+                 OutlinedButton(
+  style: OutlinedButton.styleFrom(
+    backgroundColor: Colors.white,
+    foregroundColor: Colors.black,
+    side: const BorderSide(color: Colors.black),
+    minimumSize: const Size(120, 50),
+    shape: RoundedRectangleBorder(
+      borderRadius: BorderRadius.circular(20),
+    ),
+  ),
+  onPressed: () async {
+    int? idregistro = await providerregistro.getNumeroById(1);
+    if (idregistro == null || idregistro == 0) return;
 
-                        Navigator.push(
-                          context,
-                          MaterialPageRoute(
-                            builder: (context) => EditDatosColoranteIPSForm(
-                              id: 1,
-                              DatoscoloranteIPS: datoscoloranteips[0],
+    provider.addDatosColoranteIPS(DatosColoranteIPS(
+      hasErrors: true,
+      hasSend: false,
+      idregistro: idregistro,
+      Colorante: 'Microbatch Azul',
+      Codigo: '',
+      KL: '',
+      BP: '',
+      Dosificacion: 0,
+      CantidadBolsone: 1,
+    ));
+  },
+  child: const Text(
+    "SI",
+    style: TextStyle(fontSize: 24),
+  ),
+),
+                ],
+              ),
+          ),
+          const Titulos(
+            titulo: 'REGISTRO COLORANTE',
+            tipo: 0,
+          ),
+          SizedBox(
+            height: 180,
+            child: Expanded(
+              child: Consumer<DatosProviderPrefIPS>(
+                builder: (context, provider, _) {
+                  final datoscoloranteips = provider.datoscoloranteipsList;
+            
+                  if (datoscoloranteips.isEmpty) {
+                    return const Center(
+                      child: Text(
+                        'No hay registros aún.',
+                        style: TextStyle(fontSize: 18, color: Colors.grey),
+                      ),
+                    );
+                  }
+            
+                  return ListView.separated(
+                    itemCount: datoscoloranteips.length,
+                    separatorBuilder: (_, __) => const SizedBox(height: 8),
+                    itemBuilder: (context, index) {
+                      final dtdatoscoloranteips = datoscoloranteips[index];
+            
+                      return GradientExpandableCard(
+                        idlista: dtdatoscoloranteips.id,
+                        hasSend:dtdatoscoloranteips.hasSend,
+                        numeroindex: (index + 1).toString(),
+                        onSwipedAction: () async {
+                          await provider.removeDatosColoranteIPS(context, dtdatoscoloranteips.id!);   
+                        },
+                        titulo: 'Colorante',                      
+                        subtitulos: {'': dtdatoscoloranteips.Colorante},
+                        expandedContent: generateExpandableContent([                        
+                          ['Codigo: ', 1, dtdatoscoloranteips.Codigo],
+                          ['KL: ', 1, dtdatoscoloranteips.KL],
+                          ['BP: ', 1, dtdatoscoloranteips.BP],
+                          ['Dosificacion: ', 1, dtdatoscoloranteips.Dosificacion.toString()],
+                          ['CantidadBolsone: ', 1, dtdatoscoloranteips.CantidadBolsone.toString()],
+                        ]),
+                        hasErrors: dtdatoscoloranteips.hasErrors,
+                        onOpenModal: () {
+                          Navigator.push(
+                            context,
+                            MaterialPageRoute(
+                              builder: (context) => EditDatosColoranteIPSForm(
+                                id: dtdatoscoloranteips.id!,
+                                DatoscoloranteIPS: dtdatoscoloranteips,
+                              ),
                             ),
-                          ),
-                        );                  
-
-                    }
-                  },
-                ),
-              ],
-            ),      
-
-          
-          Titulos(
-            titulo: 'REGISTRO',
+                          );
+                        },
+                      );
+                    },
+                  );
+                },
+              ),
+            ),
+          ),                             
+          const Titulos(
+            titulo: 'REGISTRO MATERIA PRIMA',
             tipo: 0,            
           ),
           Expanded(
@@ -269,7 +404,7 @@ class _ScreenListDatosMPIPSState extends State<ScreenListDatosMPIPS> {
     idregistro: idregistro,  // Ya sabemos que no es 0 ni null
               MateriPrima: 'JADE CZ 328A',
               INTF: ' ',
-              CantidadEmpaque: '1100Kg',
+              CantidadEmpaque: ' ',
               Identif: ' ',
               CantidadBolsones: 1,
               Dosificacion: 0,
@@ -280,26 +415,6 @@ class _ScreenListDatosMPIPSState extends State<ScreenListDatosMPIPS> {
       ),);
     
   }
-
-  void _showBottomSheet() {
-  showModalBottomSheet(
-    context: context,
-    isScrollControlled: true,
-    backgroundColor: Colors.transparent,
-    builder: (BuildContext context) {
-      return Container(
-        padding: EdgeInsets.only(top: 5, left: 16, right: 16),
-        height: 370,
-        decoration: const BoxDecoration(
-          color: Colors.white,
-          borderRadius: BorderRadius.vertical(top: Radius.circular(25))
-        ),
-        child: FormularioColoranteIPS(),
-      );
-    },
-  );
-}
-
 }
 
 
@@ -457,7 +572,7 @@ class FormularioGeneralDatosMPIPS extends StatelessWidget {
 
           DropdownSimple(
             name: 'MateriPrima',
-            label: 'Materiprima',
+            label: 'Materia Prima',
             textoError: 'Selecciona',
             valorInicial: widget.datosMpIps.MateriPrima,
             opciones: 'MateriaPrima',
@@ -478,21 +593,19 @@ class FormularioGeneralDatosMPIPS extends StatelessWidget {
               },
               label: 'Intf',
               valorInicial: widget.datosMpIps.INTF.toString(),
+              isNumeric: false,
               isRequired: true,),
 
-          DropdownSimple(
-            name: 'CantidadEmpaque',
-            label: 'Cantidadempaque',
-            textoError: 'Selecciona',
-            valorInicial: widget.datosMpIps.CantidadEmpaque,
-            opciones: 'CantidadEmapque',
-            dropOptions: dropOptions,
-            onChanged: (value) {
+          CustomInputField(
+              name: 'CantidadEmpaque',
+               onChanged: (value) {
               final field = _formKey.currentState?.fields['CantidadEmpaque'];
               field?.validate(); // Valida solo este campo
               field?.save();
             },
-          ),
+              label: 'Cantidad de Empaque [Kg]',
+              valorInicial: widget.datosMpIps.CantidadEmpaque.toString(),
+              isRequired: true,),
 
           CustomInputField(
               name: 'Identif',
@@ -528,20 +641,20 @@ class FormularioGeneralDatosMPIPS extends StatelessWidget {
                 field?.save();
               },
               label: 'Dosificacion [%]',
-              valorInicial: widget.datosMpIps.Dosificacion.toString(),
+              valorInicial: widget.datosMpIps.Dosificacion == 0 ? '': widget.datosMpIps.Dosificacion.toString(),
               isNumeric: true,
               isRequired: true,
               max: 100,
               min: 0,),
 
           CustomInputField(
-              name: 'Humedad [%]',
+              name: 'Humedad',
               onChanged: (value) {
                 final field = _formKey.currentState?.fields['Humedad'];
                 field?.validate(); // Valida solo este campo
                 field?.save();
               },
-              label: 'Humedad',
+              label: 'Humedad[%]',
               valorInicial: widget.datosMpIps.Humedad.toString(),
               isNumeric: true,
               isRequired: true,),         
@@ -549,6 +662,204 @@ class FormularioGeneralDatosMPIPS extends StatelessWidget {
             label: 'Conformidad',
             name: 'Conformidad',
             valorInicial: widget.datosMpIps.Conformidad,
+          ),
+
+    ]
+      ),
+    );
+  }
+}
+
+class EditProviderDatosColoranteIPS with ChangeNotifier {
+  // Implementación del proveedor, puedes agregar lógica específica aquí
+}
+
+class EditDatosColoranteIPSForm extends StatefulWidget {
+  final int id;
+  final DatosColoranteIPS DatoscoloranteIPS;
+
+  const EditDatosColoranteIPSForm({required this.id, required this.DatoscoloranteIPS, Key? key})    
+      : super(key: key);
+
+  @override
+  _EditDatosColoranteIPSFormState createState() => _EditDatosColoranteIPSFormState();
+}
+
+class _EditDatosColoranteIPSFormState extends State<EditDatosColoranteIPSForm> {
+  final GlobalKey<FormBuilderState> _formKey = GlobalKey<FormBuilderState>();
+
+  // Mapa para las opciones de Dropdowns
+  final Map<String, List<dynamic>> dropOptionsDatosColoranteIPS = {
+    'Colorante': ['Microbatch Azul', 'Microbatch Verde'],
+    'CantidadBolsone': [1,2,3,4,5],
+  };
+
+  @override
+  void initState() {
+    super.initState();
+    // Validación inicial después de la construcción del widget
+    WidgetsBinding.instance.addPostFrameCallback((_) {
+      _formKey.currentState?.saveAndValidate();
+    });
+  }
+
+  @override
+  Widget build(BuildContext context) {
+    return ChangeNotifierProvider(
+      create: (_) => EditProviderDatosColoranteIPS(),
+      child: Consumer<EditProviderDatosColoranteIPS>(
+        builder: (context, provider, child) {
+          return Scaffold(
+          body: Column(
+              children:[
+               Expanded(
+      child: Padding(
+        padding: const EdgeInsets.all(8.0),
+        child: SingleChildScrollView(
+          child: FormularioGeneralDatosColoranteIPS(
+              formKey: _formKey,
+              widget: widget,
+              dropOptions: dropOptionsDatosColoranteIPS,
+            ),),),),
+             BotonDeslizable(
+  onPressed: () async {
+    final provider = Provider.of<DatosProviderPrefIPS>(context, listen: false);
+    final updatedDatito = obtenerDatosActualizados();
+    
+    await provider.updateDatosColoranteIPS(widget.id, updatedDatito);
+    Navigator.pop(context);
+  },
+  onSwipedAction: () async {
+    final provider = Provider.of<DatosProviderPrefIPS>(context, listen: false);
+    final updatedDatito = obtenerDatosActualizados();
+    
+    await provider.updateDatosColoranteIPS(widget.id, updatedDatito);
+
+    bool enviado = await provider.enviarDatosAPIDatosColoranteIPS(widget.id);
+
+    if (!enviado) {
+      EnviadoDialog.mostrar(context, false);     
+    } else {
+      final updatedDatitoEnviado = obtenerDatosActualizados(hasSend: true);
+      await provider.updateDatosColoranteIPS(widget.id, updatedDatitoEnviado);
+      EnviadoDialog.mostrar(context, true); 
+      Navigator.pop(context);
+    }
+  },
+)
+          ]));
+        }));
+  }
+DatosColoranteIPS obtenerDatosActualizados({bool hasSend = false}) {
+  _formKey.currentState?.save();
+  final values = _formKey.currentState!.value;
+
+  return
+                widget.DatoscoloranteIPS.copyWith(
+                hasErrors:_formKey.currentState?.fields.values.any((field) => field.hasError) ?? false,
+                hasSend: hasSend,
+                  Colorante: values['Colorante'] ?? widget.DatoscoloranteIPS.Colorante,
+                  Codigo: values['Codigo'] ?? widget.DatoscoloranteIPS.Codigo,
+                  KL: values['KL'] ?? widget.DatoscoloranteIPS.KL,
+                  BP: values['BP'] ?? widget.DatoscoloranteIPS.BP,
+                  Dosificacion:(values['Dosificacion']?.isEmpty ?? true)? 0 : double.tryParse(values['Dosificacion']),
+                  CantidadBolsone:(values['CantidadBolsone'] == null || values['CantidadBolsone'].toString().isEmpty) ? 0 : int.tryParse(values['CantidadBolsone'].toString()) ?? 0,
+
+                );
+
+}
+}
+
+class FormularioGeneralDatosColoranteIPS extends StatelessWidget {
+  const FormularioGeneralDatosColoranteIPS({
+    super.key,
+    required GlobalKey<FormBuilderState> formKey,
+    required this.widget,
+    required this.dropOptions,
+  }) : _formKey = formKey;
+
+  final GlobalKey<FormBuilderState> _formKey;
+  final widget;
+  final Map<String, List<dynamic>> dropOptions;
+
+  @override
+  Widget build(BuildContext context) {
+    return FormBuilder(
+      key: _formKey,
+      child: Column(
+        children: [
+          DropdownSimple(
+            name: 'Colorante',
+            label: 'Colorante',
+            textoError: 'Selecciona',
+            valorInicial: widget.DatoscoloranteIPS.Colorante,
+            opciones: 'Colorante',
+            dropOptions: dropOptions,
+            onChanged: (value) {
+              final field = _formKey.currentState?.fields['Colorante'];
+              field?.validate(); // Valida solo este campo
+              field?.save();
+            },
+          ),
+
+          CustomInputField(
+              name: 'Codigo',
+              onChanged: (value) {
+                final field = _formKey.currentState?.fields['Codigo'];
+                field?.validate(); // Valida solo este campo
+                field?.save();
+              },
+              label: 'Codigo',
+              valorInicial: widget.DatoscoloranteIPS.Codigo,
+              ),
+
+          CustomInputField(
+              name: 'KL',
+              onChanged: (value) {
+                final field = _formKey.currentState?.fields['KL'];
+                field?.validate(); // Valida solo este campo
+                field?.save();
+              },
+              label: 'Kl',
+              valorInicial: widget.DatoscoloranteIPS.KL,
+              ),
+
+          CustomInputField(
+              name: 'BP',
+              onChanged: (value) {
+                final field = _formKey.currentState?.fields['BP'];
+                field?.validate(); // Valida solo este campo
+                field?.save();
+              },
+              label: 'Bp',
+              valorInicial: widget.DatoscoloranteIPS.BP,
+              ),
+
+          CustomInputField(
+              name: 'Dosificacion',
+              onChanged: (value) {
+                final field = _formKey.currentState?.fields['Dosificacion'];
+                field?.validate(); // Valida solo este campo
+                field?.save();
+              },
+              label: 'Dosificacion',
+              valorInicial: widget.DatoscoloranteIPS.Dosificacion == 0
+    ? ''
+    : widget.DatoscoloranteIPS.Dosificacion.toString(),
+              ),
+
+          DropdownSimple(
+            name: 'CantidadBolsone',
+            label: 'Cantidadbolsone',
+            textoError: 'Selecciona',
+            valorInicial: widget.DatoscoloranteIPS.CantidadBolsone,
+            opciones: 'CantidadBolsone',
+            dropOptions: dropOptions,
+            onChanged: (value) {
+              final field = _formKey.currentState?.fields['CantidadBolsone'];
+              field?.validate(); // Valida solo este campo
+              field?.save();
+            },
           ),
 
     ]

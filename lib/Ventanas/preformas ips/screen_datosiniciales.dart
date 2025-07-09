@@ -1,5 +1,5 @@
-// ignore_for_file: non_constant_identifier_names
 import 'dart:convert';
+import 'package:control_de_calidad/Providers/Providerids.dart';
 import 'package:control_de_calidad/Ventanas/preformas%20ips/screen_ctrl_pesos.dart';
 import 'package:control_de_calidad/widgets/Alertas.dart';
 import 'package:control_de_calidad/widgets/checkboxformulario.dart';
@@ -12,11 +12,9 @@ import 'package:flutter_form_builder/flutter_form_builder.dart';
 import 'package:provider/provider.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 
-class RegistroIPSProvider with ChangeNotifier {
-  final String baseUrl = '${Config.baseUrl}/RegistroIPS';
+class RegistroIPSProvider with ChangeNotifier {  
   SharedPreferences? _prefs;
   bool isLoading = true;
-
   String Modalidad = "Normal";
   String Lote = " ";
   String Maquinista = "Agustin Fernadez";
@@ -202,45 +200,59 @@ class RegistroIPSProvider with ChangeNotifier {
       await _prefs!.setBool("Conformidad", Conformidad);
       this.Conformidad = Conformidad;
     }
-
     notifyListeners();
   }
+  
+  Future<void> updateDatabase(BuildContext context) async {
+  try {
+    final idsProvider = Provider.of<IdsProvider>(context, listen: false);
+    final int? numero = await idsProvider.getNumeroById(1);
 
-  Future<void> updateDatabase() async {
-    try {
-      final response = await http.put(
-        Uri.parse(baseUrl),
-        headers: {"Content-Type": "application/json"},
-        body: json.encode({
-          "Modalidad": Modalidad,
-          "Lote": Lote,
-          "Maquinista": Maquinista,
-          "Parte": Parte,
-          "Producto": Producto,
-          "Gramaje": Gramaje,
-          "Empaque": Empaque,
-          "Cavhabilitadas": Cavhabilitadas,
-          "Ciclo": Ciclo,
-          "PesoProm": PesoProm,
-          "PAinicial": PAinicial,
-          "PAfinal": PAfinal,
-          "Cantidad": Cantidad,
-          "Pesopromneto": Pesopromneto,
-          "Totalcajascont": Totalcajascont,
-          "Saldos": Saldos,
-          "Totalprodu": Totalprodu,
-          "Cantidadtotaldepiezas": Cantidadtotaldepiezas,
-          "CantidadtotalKg": CantidadtotalKg,
-          "Conformidad": Conformidad ? 1 : 0,
-        }),
-      );           
-      if (response.statusCode != 200) { 
-              
-      }
-    } catch (e) {
-      
+    if (numero == null) {
+      _mostrarDialogoSeguro(context, enviado: false);
+      return;
     }
+    final String baseUrl = '${Config.baseUrl}/RegistroIPS/$numero';
+    final response = await http.put(
+      Uri.parse(baseUrl),
+      headers: {"Content-Type": "application/json"},
+      body: json.encode({
+        "Modalidad": Modalidad,
+        "Lote": Lote,
+        "Maquinista": Maquinista,
+        "Parte": Parte,
+        "Producto": Producto,
+        "Gramaje": Gramaje,
+        "Empaque": Empaque,
+        "Cavhabilitadas": Cavhabilitadas,
+        "Ciclo": Ciclo,
+        "PesoProm": PesoProm,
+        "PAinicial": PAinicial,
+        "PAfinal": PAfinal,
+        "Cantidad": Cantidad,
+        "Pesopromneto": Pesopromneto,
+        "Totalcajascont": Totalcajascont,
+        "Saldos": Saldos,
+        "Totalprodu": Totalprodu,
+        "Cantidadtotaldepiezas": Cantidadtotaldepiezas,
+        "CantidadtotalKg": CantidadtotalKg,
+        "Conformidad": Conformidad ? 1 : 0,
+      }),
+    );
+    final fueExitoso = response.statusCode >= 200 && response.statusCode < 300;
+    _mostrarDialogoSeguro(context, enviado: fueExitoso);
+  } catch (e) {
+    _mostrarDialogoSeguro(context, enviado: false);  
   }
+}
+/// Esta función asegura que el diálogo se muestre después del frame actual
+void _mostrarDialogoSeguro(BuildContext context, {required bool enviado}) {
+  WidgetsBinding.instance.addPostFrameCallback((_) {
+    if (context.mounted) {
+      EnviadoDialog.mostrar(context, enviado);
+    }
+  });
+}
 
   Future<void> clearData() async {
     if (_prefs == null) return;
@@ -285,8 +297,7 @@ class _FormularioRegistroIPSState extends State<FormularioRegistroIPS> {
     'Producto': ['CRISTAL EC30', 'VERDE EC30', 'AZUL Z EC30','PLATEADO EC30','ECO CRISTAL EC30'],
     'Gramaje': ['20.1 M5 R', '23.6 M5 R', '46.6 M5 R','54.6 M5 R'],
     'Empaque': ['Caja', 'Jaula Pequeña', 'Jaula Grande'], 
-    'Cavhabilitadas': ['96', '95', '94','93','92','91','90'],
-
+    'Cavhabilitadas': ['96', '95', '94','93','92','91','90']
   };
 
   @override
@@ -620,8 +631,6 @@ CheckboxSimple(
     provider.updateData(Conformidad: value);
   },
 ),];
-
-
             return Scaffold(
               body: SingleChildScrollView(
                 padding: const EdgeInsets.all(12),
@@ -633,7 +642,7 @@ CheckboxSimple(
                     children: [
           const SizedBox(height: 10,),
                       if (provider.isLoading) // Mostrar solo si está cargando
-                        Center(child: CircularProgressIndicator())
+                        const Center(child: CircularProgressIndicator())
                       else ...[
                        ...buildFieldRows(fields),   
                       ],                     
@@ -641,7 +650,9 @@ CheckboxSimple(
                   ),                                   
                 ),                                
               ),
-              bottomNavigationBar: _BotonGuardar(context,provider.updateDatabase)           
+              bottomNavigationBar: _BotonGuardar(context,
+  () => provider.updateDatabase(context),
+),          
             );
           },
         );
@@ -693,8 +704,7 @@ Widget _BotonGuardar(BuildContext context, VoidCallback onPressed) {
 }  
 
 List<Widget> buildFieldRows(List<Widget> fields) {
-  List<Widget> rows = [];
-  
+  List<Widget> rows = [];  
   for (int i = 0; i < fields.length; i += 2) {
     rows.add(
       Row(
@@ -706,10 +716,8 @@ List<Widget> buildFieldRows(List<Widget> fields) {
       ),
     );
   }
-  
   return rows;
 }
-
 }
 
 

@@ -102,13 +102,14 @@ class IdsProvider with ChangeNotifier {
   // Insertar datos predeterminados después de crear la tabla
   await db.execute('''
     INSERT INTO $tableRegistros (id, nombre, numero, estado) VALUES
-    (1, 'IPS-400', 1, 0),
-    (2, 'I5', 2, 0),
-    (3, 'CCM', 3, 0),
-    (4, 'COLORACAP', 4, 0),
-    (5, 'YUTZUMI', 5, 0),
-    (6, 'IT 2 HX-258', 6, 0),
-    (7, 'SOPLADO', 7, 0)
+    (1, 'I6', 1, 0),
+    (2, 'I9', 2, 0),
+    (3, 'COLORACAP', 3, 0),
+    (4, 'CCM', 4, 0),
+    (5, 'SOPLADO', 5, 0),
+    (6, 'I5', 6, 0),    
+    (7, 'IT 2 HX-258', 7, 0),
+    (8, 'YUTZUMI', 8, 0)
   ''');
 }
 

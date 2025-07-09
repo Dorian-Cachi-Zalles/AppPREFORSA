@@ -38,7 +38,7 @@ class Titulos extends StatelessWidget {
               fontSize: 18.0,
               fontWeight: FontWeight.w700,
             ),
-            textAlign: TextAlign.center,
+            textAlign: TextAlign.start,
           ),
           const Spacer(),
           if (tipo == 1)

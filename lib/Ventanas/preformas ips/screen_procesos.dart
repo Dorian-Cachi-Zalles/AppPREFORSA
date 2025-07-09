@@ -1,4 +1,4 @@
-import 'package:control_de_calidad/Providers/BDpreformasIPS.dart';
+import 'package:control_de_calidad/Providers/ProviderI6.dart';
 import 'package:control_de_calidad/Providers/Providerids.dart';
 import 'package:control_de_calidad/widgets/Alertas.dart';
 import 'package:control_de_calidad/widgets/boton_agregar.dart';
@@ -104,7 +104,7 @@ class ScreenListDatosPROCEIPS extends StatelessWidget {
       body: Column(
         children: [
           Titulos(
-            titulo: 'REGISTRO',
+            titulo: 'REGISTRO DE PROCESOS',
             tipo: 0,          
           ),
           Expanded(
@@ -135,14 +135,14 @@ class ScreenListDatosPROCEIPS extends StatelessWidget {
                       },
                                           subtitulos: {
                         'Hora': dtdatosproceips.Hora,
-                        'PAprod': dtdatosproceips.PAprod,
+                        'PA Prod': dtdatosproceips.PAprod,
                                           },
                       expandedContent: generateExpandableContent([
                        
-                        ['TempTolvaSec ', 4,dtdatosproceips.TempTolvaSec],
-                        ['TempProd: ', 1, dtdatosproceips.TempProd.toString() + ' °C'],
-                        ['Tciclo: ', 1, dtdatosproceips.Tciclo.toString() + ' seg'],	
-                        ['Tenfri: ', 1, dtdatosproceips.Tenfri.toString()],
+                        ['Temp Tolva Sec ', 4,dtdatosproceips.TempTolvaSec],
+                        ['Temp Prod: ', 1, dtdatosproceips.TempProd.toString() + ' °C'],
+                        ['T ciclo: ', 1, dtdatosproceips.Tciclo.toString() + ' seg'],	
+                        ['T enfri: ', 1, dtdatosproceips.Tenfri.toString()],
                       ]),
                       hasErrors: dtdatosproceips.hasErrors,
                       hasSend: dtdatosproceips.hasSend,
@@ -312,6 +312,7 @@ class FormularioGeneralDatosPROCEIPS extends StatelessWidget {
 
           CustomInputField(
               name: 'Hora',
+              isreadonly: true,
               onChanged: (value) {
                 final field = _formKey.currentState?.fields['Hora'];
                 field?.validate(); // Valida solo este campo
@@ -347,7 +348,10 @@ class FormularioGeneralDatosPROCEIPS extends StatelessWidget {
                 field?.save();
               },
               label: 'Temperatura Tolva Seccionada ${index+1} [°C]',
-              valorInicial: widget.DatosProceips.TempTolvaSec[index].toString(),  
+              valorInicial: widget.DatosProceips.TempTolvaSec[index] == 0
+              ? ''
+              : widget.DatosProceips.TempTolvaSec[index].toString(),
+  
               isNumeric: true,
               isRequired: true,),
             )),
@@ -359,7 +363,7 @@ class FormularioGeneralDatosPROCEIPS extends StatelessWidget {
                 field?.save();
               },
               label: 'Temperatura de prod [°C]',
-              valorInicial: widget.DatosProceips.TempProd.toString(),
+              valorInicial: widget.DatosProceips.TempProd == 0 ? '': widget.DatosProceips.TempProd.toString(),
               isNumeric: true,
               isRequired: true,),
 
@@ -371,7 +375,7 @@ class FormularioGeneralDatosPROCEIPS extends StatelessWidget {
                 field?.save();
               },
               label: 'Tiempo de ciclo [seg]',
-              valorInicial: widget.DatosProceips.Tciclo.toString(),
+              valorInicial:widget.DatosProceips.Tciclo == 0 ?'': widget.DatosProceips.Tciclo.toString(),
              isNumeric: true,
               isRequired: true,),
 
@@ -383,7 +387,7 @@ class FormularioGeneralDatosPROCEIPS extends StatelessWidget {
                 field?.save();
               },
               label: 'Tiempo de enfriamiento [seg]',
-              valorInicial: widget.DatosProceips.Tenfri.toString(),
+              valorInicial: widget.DatosProceips.Tenfri == 0 ? '': widget.DatosProceips.Tenfri.toString(),
               isNumeric: true,
               isRequired: true,),
 

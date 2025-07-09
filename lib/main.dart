@@ -1,9 +1,8 @@
 import 'package:control_de_calidad/Configuraciones/Configuraciones.dart';
-import 'package:control_de_calidad/Providers/BDpreformasIPS.dart';
+import 'package:control_de_calidad/Providers/ProviderI6.dart';
 import 'package:control_de_calidad/Providers/Providerids.dart';
 import 'package:control_de_calidad/Ventanas/Screen_login.dart';
 import 'package:control_de_calidad/Ventanas/home_screen.dart';
-import 'package:control_de_calidad/Ventanas/preformas%20ips/form_coloranteips.dart';
 import 'package:control_de_calidad/Ventanas/preformas%20ips/screen_datosiniciales.dart';
 import 'package:control_de_calidad/widgets/settings_page.dart';
 import 'package:flutter/material.dart';
@@ -70,7 +69,7 @@ class AppThemes {
     ),
   );
 }
- 
+
 void main() async{
   WidgetsFlutterBinding.ensureInitialized();
   bool isLicensed = await LicenseChecker.checkLicense();
@@ -83,8 +82,7 @@ void main() async{
           ChangeNotifierProvider(create: (_) => SettingsProvider()),          
           ChangeNotifierProvider(create: (_) => IdsProvider()),
           ChangeNotifierProvider(create: (_) => DatosProviderPrefIPS()),         
-          ChangeNotifierProvider(create: (_) => RegistroIPSProvider()) ,
-          ChangeNotifierProvider(create: (_) => ColoranteIPSProvider()) ,           
+          ChangeNotifierProvider(create: (_) => RegistroIPSProvider()) ,                    
 
           
         ],        

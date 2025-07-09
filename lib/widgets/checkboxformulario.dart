@@ -21,8 +21,8 @@ class CheckboxSimple extends StatelessWidget {
       padding: const EdgeInsets.symmetric(vertical: 8.0),
       child: FormBuilderCheckbox(
         name: name,
-        title: Text(label,style: TextStyle(
-                  fontSize: 18,
+        title: Text(label,style: const TextStyle(
+                  fontSize: 17.5,
                   color: Colors.black,
                   fontWeight: FontWeight.normal), ),
         

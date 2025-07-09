@@ -1,6 +1,5 @@
 import 'dart:convert';
 import 'package:control_de_calidad/Configuraciones/Configuraciones.dart';
-import 'package:control_de_calidad/Ventanas/preformas%20ips/formulariocolorante.dart';
 import 'package:control_de_calidad/Ventanas/preformas%20ips/screen_ctrl_MP.dart';
 import 'package:control_de_calidad/Ventanas/preformas%20ips/screen_ctrl_pesos.dart';
 import 'package:control_de_calidad/Ventanas/preformas%20ips/screen_defectos.dart';
@@ -166,35 +165,21 @@ class DatosProviderPrefIPS with ChangeNotifier {
     _datostempipsList = tempmaps.map((map) => DatosTEMPIPS.fromMap(map)).toList();
 
       final maps = await _db.query(tableDatosColoranteIPS);
-  _datoscoloranteipsList = maps.map((map) => DatosColoranteIPS.fromMap(map)).toList();
-
-  // Si no hay datos, agrega uno automáticamente
-  if (_datoscoloranteipsList.isEmpty) {     
-    
-      final nuevo = DatosColoranteIPS(
-        hasErrors: true,
-        hasSend: false,
-        idregistro: 0,
-        Colorante: 'Microbatch azul',
-        Codigo: '',
-        KL: '',
-        BP: '',
-        Dosificacion: 0,
-        CantidadBolsone: 1,
-      );
-
-      await addDatosColoranteIPS(nuevo); // Asumiendo que esta función guarda y notifica
-    
-  }
-
+  _datoscoloranteipsList = maps.map((map) => DatosColoranteIPS.fromMap(map)).toList();     
   notifyListeners();
   }
-  
+
    Future<void> addDatosColoranteIPS(DatosColoranteIPS nuevoDato) async {
-    final id = await _db.insert(tableDatosColoranteIPS, nuevoDato.toMap());
-    _datoscoloranteipsList.add(nuevoDato.copyWith(id: id));
-    notifyListeners();
+  // Limitar el número máximo de registros a 2
+  if (_datoscoloranteipsList.length >= 1) {    
+    return;
   }
+
+  final id = await _db.insert(tableDatosColoranteIPS, nuevoDato.toMap());
+  _datoscoloranteipsList.add(nuevoDato.copyWith(id: id));
+  notifyListeners();
+}
+
 
   Future<void> addDatosMPIPS(DatosMPIPS nuevoDato) async {
     final id = await _db.insert(tableDatosMPIPS, nuevoDato.toMap());
@@ -237,7 +222,8 @@ class DatosProviderPrefIPS with ChangeNotifier {
       _datoscoloranteipsList[index] = updatedDato.copyWith(id: id);
       notifyListeners();
     }
-  }  
+  }
+
 
   Future<void> updateDatosTEMPIPS(int id, DatosTEMPIPS updatedDato) async {
     final index = _datostempipsList.indexWhere((d) => d.id == id);
@@ -306,6 +292,34 @@ class DatosProviderPrefIPS with ChangeNotifier {
       );
       _datospesosipsList[index] = updatedDato.copyWith(id: id);
       notifyListeners();
+    }
+  }
+
+  Future<void> removeDatosColoranteIPS(BuildContext context, int id) async {
+    final index = _datoscoloranteipsList.indexWhere((d) => d.id == id);
+    if (index != -1) {
+      final deletedData = _datoscoloranteipsList[index];
+      await _db.delete(
+        tableDatosColoranteIPS,
+        where: 'id = ?',
+        whereArgs: [id],
+      );
+      _datoscoloranteipsList.removeAt(index);
+      notifyListeners();
+
+      ScaffoldMessenger.of(context).showSnackBar(
+        SnackBar(
+          content: const Text('Registro eliminado'),
+          action: SnackBarAction(
+            label: 'Deshacer',
+            onPressed: () async {
+              final newId = await _db.insert(tableDatosColoranteIPS, deletedData.toMap());
+              _datoscoloranteipsList.insert(index, deletedData.copyWith(id: newId));
+              notifyListeners();
+            },
+          ),
+        ),
+      );
     }
   }
 
@@ -391,34 +405,27 @@ class DatosProviderPrefIPS with ChangeNotifier {
       );
     }
   }
-  Future<void> removePeso(BuildContext context, int id) async {
-    final index = _datospesosipsList.indexWhere((d) => d.id == id);
-    if (index != -1) {
-      final deletedData = _datospesosipsList[index];
-      await _db.delete(
-        tableDatosPESOSIPS,
-        where: 'id = ?',
-        whereArgs: [id],
-      );
-      _datospesosipsList.removeAt(index);
-      notifyListeners();
+  
+  Future<void> removePeso(int id, void Function(VoidCallback onUndo) showUndoSnackBar) async {
+  final index = _datospesosipsList.indexWhere((d) => d.id == id);
+  if (index != -1) {
+    final deletedData = _datospesosipsList[index];
+    await _db.delete(
+      tableDatosPESOSIPS,
+      where: 'id = ?',
+      whereArgs: [id],
+    );
+    _datospesosipsList.removeAt(index);
+    notifyListeners();
 
-      ScaffoldMessenger.of(context).showSnackBar(
-        SnackBar(
-          content: const Text('Registro eliminado'),
-          action: SnackBarAction(
-            label: 'Deshacer',
-            onPressed: () async {
-              final newId =
-                  await _db.insert(tableDatosPESOSIPS, deletedData.toMap());
-              _datospesosipsList.insert(index, deletedData.copyWith(id: newId));
-              notifyListeners();
-            },
-          ),
-        ),
-      );
-    }
-  }  
+    showUndoSnackBar(() async {
+      final newId = await _db.insert(tableDatosPESOSIPS, deletedData.toMap());
+      _datospesosipsList.insert(index, deletedData.copyWith(id: newId));
+      notifyListeners();
+    });
+  }
+}
+
 
   Future<void> removeDatosTEMPIPS(BuildContext context, int id) async {
     final index = _datostempipsList.indexWhere((d) => d.id == id);
@@ -492,7 +499,7 @@ Future<void> finishProcess() async {
   _datospesosipsList.clear();
   await _db.delete(tableDatosMPIPS);
   await _db.execute("DELETE FROM sqlite_sequence WHERE name='$tableDatosMPIPS'");
-  _datostempipsList.clear();
+  _datosmpipsList.clear();
   await _db.delete(tableDatosDEFIPS);
   await _db.execute("DELETE FROM sqlite_sequence WHERE name='$tableDatosDEFIPS'");
   _datosdefipsList.clear();
@@ -502,47 +509,18 @@ Future<void> finishProcess() async {
   await _db.delete(tableDatosTEMPIPS);
   await _db.execute("DELETE FROM sqlite_sequence WHERE name='$tableDatosTEMPIPS'");
   _datostempipsList.clear();
-  // Restablecer los valores predeterminados en la tabla Colorante
-  await _db.update(
-    tableDatosColoranteIPS,
-    {
-      'hasErrors': true,
-      'hasSend': false,
-      'idregistro': 0,
-      'Colorante': 'Microbatch azul',
-      'Codigo': '',
-      'KL': '',
-      'BP': '',
-      'Dosificacion': 0,
-      'CantidadBolsone': 1,
-    },
-    where: 'id = ?', // Ajusta el ID si es diferente
-    whereArgs: [1], // Usar el ID correcto
-  );
-
-  // Limpiar la lista en memoria
-  _datoscoloranteipsList[0] = DatosColoranteIPS(
-    hasErrors: true,
-    hasSend: false,
-    idregistro: 0,
-    Colorante: 'Microbatch azul',
-    Codigo: '',
-    KL: '',
-    BP: '',
-    Dosificacion: 0,
-    CantidadBolsone: 1,
-  );
-
+  await _db.delete(tableDatosColoranteIPS);
+  await _db.execute("DELETE FROM sqlite_sequence WHERE name='$tableDatosColoranteIPS'");
+  _datoscoloranteipsList.clear();  
   notifyListeners();
 }
 
 Future<bool> enviarDatosAPIDatosColoranteIPS(int id) async {
-    final url = Uri.parse("${Config.baseUrl}/Colorante");
+    final url = Uri.parse("${Config.baseUrl}/coloranteIPS");
 
     // Buscar el dato actualizado en SQLite
     final index = _datoscoloranteipsList.indexWhere((d) => d.id == id);
     if (index == -1) {
-      print("❌ Error: No se encontró el dato con ID $id en SQLite");
       return false;
     }
 
@@ -556,31 +534,26 @@ Future<bool> enviarDatosAPIDatosColoranteIPS(int id) async {
       "KL": dato.KL,
       "BP": dato.BP,
       "Dosificacion": dato.Dosificacion,
-      "CantidadBolsone": dato.CantidadBolsone
+      "CantidadBolsones": dato.CantidadBolsone
     };
-
-    print("📤 Enviando datos a la API: $datosJson");
 
     try {
       final response = await http.post(
         url,
-        headers: {"Content-Type": "application/json"},
+       headers: {
+          "Content-Type": "application/json",
+          "Accept": "application/json",  // Asegura que reciba JSON en vez de HTML
+        },
         body: jsonEncode(datosJson),
       );
 
-      print(
-          "📥 Respuesta del servidor: ${response.statusCode} - ${response.body}");
-
-    
 
       if (response.statusCode == 201) {
         return true;
-      } else {
-        print("❌ Error al enviar datos. Código: ${response.statusCode}");
+      } else {       
         return false;
       }
-    } catch (e) {
-      print("❌ Error de conexión: $e");
+    } catch (e) {    
       return false;
     }
   }

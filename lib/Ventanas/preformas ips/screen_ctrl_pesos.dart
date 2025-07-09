@@ -1,4 +1,4 @@
-import 'package:control_de_calidad/Providers/BDpreformasIPS.dart';
+import 'package:control_de_calidad/Providers/ProviderI6.dart';
 import 'package:control_de_calidad/Providers/Providerids.dart';
 import 'package:control_de_calidad/widgets/Alertas.dart';
 import 'package:control_de_calidad/widgets/boton_agregar.dart';
@@ -103,6 +103,8 @@ class DatosPESOSIPS {
 }
 
 class ScreenListDatosPESOSIPS extends StatelessWidget {
+  const ScreenListDatosPESOSIPS({super.key});
+
   @override
   Widget build(BuildContext context) {
     final provider = Provider.of<DatosProviderPrefIPS>(context, listen: false);
@@ -110,7 +112,7 @@ class ScreenListDatosPESOSIPS extends StatelessWidget {
     return Scaffold(
       body: Column(
         children: [
-          Titulos(
+          const Titulos(
             titulo: 'REGISTROS DE PESOS',
             tipo: 0,            
           ),
@@ -139,9 +141,22 @@ class ScreenListDatosPESOSIPS extends StatelessWidget {
                       hasSend: dtdatospesosips.hasSend, 
                       numeroindex: (index + 1).toString(),
                       onSwipedAction:() async {
-                        await provider.removePeso(
-                            context, dtdatospesosips.id!);
-                      },
+    await provider.removePeso(
+      dtdatospesosips.id!,
+      (onUndo) {
+        ScaffoldMessenger.of(context).clearSnackBars();
+        ScaffoldMessenger.of(context).showSnackBar(
+          SnackBar(
+            content: const Text('Registro eliminado'),
+            action: SnackBarAction(
+              label: 'Deshacer',
+              onPressed: onUndo,
+            ),
+          ),
+        );
+      },
+    );
+  },
                       subtitulos: {
                         'Hora': dtdatospesosips.Hora,
                         'PA': dtdatospesosips.PA,                       
@@ -184,7 +199,7 @@ class ScreenListDatosPESOSIPS extends StatelessWidget {
     idregistro: idregistro,  // Ya sabemos que no es 0 ni null
     Hora: DateFormat('HH:mm').format(DateTime.now()),
     PA: ' ',
-    PesoTara: 45,
+    PesoTara: 0,
     PesoNeto: 0,
     PesoTotal: 0,
   ));  
@@ -210,14 +225,13 @@ class EditDatosPESOSIPSForm extends StatefulWidget {
   final DatosPESOSIPS datosPESOSIPS;
 
   const EditDatosPESOSIPSForm(
-      {required this.id, required this.datosPESOSIPS, Key? key})
-      : super(key: key);
+      {required this.id, required this.datosPESOSIPS, super.key});
 
   @override
-  _EditDatosPESOSIPSFormState createState() => _EditDatosPESOSIPSFormState();
+  EditDatosPESOSIPSFormState createState() => EditDatosPESOSIPSFormState();
 }
 
-class _EditDatosPESOSIPSFormState extends State<EditDatosPESOSIPSForm> {
+class EditDatosPESOSIPSFormState extends State<EditDatosPESOSIPSForm> {
   final GlobalKey<FormBuilderState> _formKey = GlobalKey<FormBuilderState>();
 
   // Mapa para las opciones de Dropdowns
@@ -241,7 +255,7 @@ class _EditDatosPESOSIPSFormState extends State<EditDatosPESOSIPSForm> {
         return Scaffold(
           resizeToAvoidBottomInset: true,
             body: Column(children: [
-          Titulos(titulo: 'Formulario de Pesos', tipo: 0),
+          const Titulos(titulo: 'Formulario de Pesos', tipo: 0),
           Expanded(
             child: Padding(
               padding: const EdgeInsets.all(8.0),
@@ -256,29 +270,33 @@ class _EditDatosPESOSIPSFormState extends State<EditDatosPESOSIPSForm> {
           ),
           BotonDeslizable(
   onPressed: () async {
-    final provider = Provider.of<DatosProviderPrefIPS>(context, listen: false);
-    final updatedDatito = obtenerDatosActualizados();
-    
-    await provider.updatePESO(widget.id, updatedDatito);
-    Navigator.pop(context);
-  },
+  if (!mounted) return;
+  final provider = Provider.of<DatosProviderPrefIPS>(context, listen: false);
+  final updatedDatito = obtenerDatosActualizados();
+
+  await provider.updatePESO(widget.id, updatedDatito);
+
+  if (!mounted) return;
+  Navigator.pop(context);
+},
   onSwipedAction: () async {
-    final provider = Provider.of<DatosProviderPrefIPS>(context, listen: false);
-    final updatedDatito = obtenerDatosActualizados();
-    
-    await provider.updatePESO(widget.id, updatedDatito);
+  if (!mounted) return;
+  final provider = Provider.of<DatosProviderPrefIPS>(context, listen: false);
+  final updatedDatito = obtenerDatosActualizados();
+  await provider.updatePESO(widget.id, updatedDatito);
+  bool enviado = await provider.enviarDatosAPIPeso(widget.id);
+  if (!mounted) return; 
+  if (!enviado) {
+    EnviadoDialog.mostrar(context, false);
+    return; 
+  }
+  final updatedDatitoEnviado = obtenerDatosActualizados(hasSend: true);
+  await provider.updatePESO(widget.id, updatedDatitoEnviado);
+  if (!mounted) return;
 
-    bool enviado = await provider.enviarDatosAPIPeso(widget.id);
-
-    if (!enviado) {
-      EnviadoDialog.mostrar(context, false);     
-    } else {
-      final updatedDatitoEnviado = obtenerDatosActualizados(hasSend: true);
-      await provider.updatePESO(widget.id, updatedDatitoEnviado);
-      EnviadoDialog.mostrar(context, true); 
-      Navigator.pop(context);
-    }
-  },
+  EnviadoDialog.mostrar(context, true);
+  Navigator.pop(context);
+},
 )
         ]));
       },
@@ -311,7 +329,7 @@ class FormularioGeneralDatosPESOSIPS extends StatelessWidget {
   }) : _formKey = formKey;
 
   final GlobalKey<FormBuilderState> _formKey;
-  final widget;
+  final dynamic widget;
   final Map<String, List<dynamic>> dropOptions;
   void _updatePesoTotal(BuildContext context) {
     final formState = _formKey.currentState;
@@ -347,6 +365,7 @@ class FormularioGeneralDatosPESOSIPS extends StatelessWidget {
                 field?.save();
               },
               label: 'Hora',
+              isreadonly: true,
               isNumeric: false,
               valorInicial: widget.datosPESOSIPS.Hora,
               isRequired: true,
@@ -371,7 +390,7 @@ class FormularioGeneralDatosPESOSIPS extends StatelessWidget {
                 _updatePesoTotal(context);
               },
               label: 'Peso Tara [Kg]',
-              valorInicial: widget.datosPESOSIPS.PesoTara.toString(),
+              valorInicial: widget.datosPESOSIPS.PesoTara == 0 ? '': widget.datosPESOSIPS.PesoTara.toString(),
               isNumeric: true,
               isRequired: true,              
               min: 0,

@@ -1,9 +1,9 @@
-import 'package:control_de_calidad/Providers/BDpreformasIPS.dart';
+import 'package:control_de_calidad/Providers/ProviderI6.dart';
 import 'package:control_de_calidad/Providers/Providerids.dart';
 import 'package:control_de_calidad/Ventanas/EstadoRegistro.dart';
 import 'package:control_de_calidad/Ventanas/Screen_login.dart';
-import 'package:control_de_calidad/Ventanas/control%20estadistico/Control%20estaditico.dart';
-import 'package:control_de_calidad/Ventanas/preformas%20ips/form_coloranteips.dart';
+//import 'package:control_de_calidad/Ventanas/control%20estadistico/Control%20estaditico.dart';
+
 import 'package:control_de_calidad/Ventanas/preformas%20ips/screen_datosiniciales.dart';
 import 'package:control_de_calidad/Ventanas/preformas_ips.dart';
 import 'package:control_de_calidad/widgets/custom_container_menu.dart';
@@ -13,6 +13,7 @@ import 'package:control_de_calidad/widgets/settings_page.dart';
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
 import 'package:feature_discovery/feature_discovery.dart';
+import 'package:url_launcher/url_launcher.dart';
 
 class HomeScreen extends StatefulWidget {
   const HomeScreen({super.key});
@@ -55,7 +56,7 @@ final GlobalKey<ScaffoldState> _scaffoldKey = GlobalKey<ScaffoldState>();
     final settingsModel = Provider.of<SettingsModel>(context);  
     final authProvider = Provider.of<IdsProvider>(context, listen: false);
     final providerIPS = Provider.of<DatosProviderPrefIPS>(context);
-    final providercolorante =  Provider.of<ColoranteIPSProvider>(context);
+   
     final providerdatosiniciales = Provider.of<RegistroIPSProvider>(context);
      return Scaffold(
       key: _scaffoldKey,
@@ -75,7 +76,7 @@ final GlobalKey<ScaffoldState> _scaffoldKey = GlobalKey<ScaffoldState>();
           children: [           
             Container(
               width: MediaQuery.of(context).size.width,
-              decoration: BoxDecoration(
+              decoration: const BoxDecoration(
                 image: DecorationImage(
                   image:
                       AssetImage('images/LABO.jpg'), // Imagen de fondo
@@ -84,7 +85,7 @@ final GlobalKey<ScaffoldState> _scaffoldKey = GlobalKey<ScaffoldState>();
               ),
               child: Column(                
                 children: [
-                  SizedBox(height: 35,),
+                  const SizedBox(height: 35,),
                   Padding(
                     padding: const EdgeInsets.all(8.0),
                     child: Center(
@@ -92,26 +93,26 @@ final GlobalKey<ScaffoldState> _scaffoldKey = GlobalKey<ScaffoldState>();
                         mainAxisAlignment: MainAxisAlignment.spaceBetween,
                         children: [
                           Container(
-                            decoration: BoxDecoration(
+                            decoration: const BoxDecoration(
                               color: Colors.white,
                               shape: BoxShape.circle,
                             ),
                             child: IconButton(
                               color: Colors.black,
-                              icon: Icon(Icons.menu, size: 32.0),
+                              icon: const Icon(Icons.menu, size: 32.0),
                               onPressed: () {
                                _scaffoldKey.currentState?.openDrawer();                            
                               },
                             ),
                           ),
                           Container(
-                            decoration: BoxDecoration(
+                            decoration: const BoxDecoration(
                               color: Colors.white,
                               shape: BoxShape.circle,
                             ),
                             child: IconButton(
                               color: Colors.black,
-                              icon: Icon(Icons.settings, size: 32.0),
+                              icon: const Icon(Icons.settings, size: 32.0),
                               onPressed: () {
                                 Navigator.push(
                               context,
@@ -164,7 +165,7 @@ final GlobalKey<ScaffoldState> _scaffoldKey = GlobalKey<ScaffoldState>();
                       children: [
                         Container(
                           width: 200,
-                          decoration: BoxDecoration(
+                          decoration: const BoxDecoration(
                             image: DecorationImage(
                               image: AssetImage(
                                   'images/logopre.png'), // Logo PREFORSA
@@ -175,7 +176,7 @@ final GlobalKey<ScaffoldState> _scaffoldKey = GlobalKey<ScaffoldState>();
                       ],
                     ),
                   ),
-                  SizedBox(height: 16),
+                  const SizedBox(height: 16),
                   Container(
                     width: double.infinity,
                     padding: const EdgeInsets.only(
@@ -204,8 +205,7 @@ final GlobalKey<ScaffoldState> _scaffoldKey = GlobalKey<ScaffoldState>();
                                       TextButton(
                                         onPressed: () {
                                           authProvider.cerrarSesion();
-                           providerIPS.finishProcess();
-                           providercolorante.clearData();
+                           providerIPS.finishProcess();                          
                            providerdatosiniciales.clearData();
                             Navigator.push(
                               context,
@@ -222,10 +222,10 @@ final GlobalKey<ScaffoldState> _scaffoldKey = GlobalKey<ScaffoldState>();
                               );                           
   },
                           child: Container(
-                            padding: EdgeInsets.symmetric(
+                            padding: const EdgeInsets.symmetric(
                                 horizontal: 24.0, vertical: 12.0),
                             decoration: BoxDecoration(
-                              gradient: LinearGradient(
+                              gradient: const LinearGradient(
                                 colors: [
                                   Color.fromARGB(255, 116, 218, 33),
                                   Color.fromARGB(255, 134, 173, 177)
@@ -236,7 +236,7 @@ final GlobalKey<ScaffoldState> _scaffoldKey = GlobalKey<ScaffoldState>();
                               borderRadius: BorderRadius.circular(
                                   30.0), // Bordes redondeados
                             ),
-                            child: Text(
+                            child: const Text(
                               'Cerrar Sesión',
                               style: TextStyle(
                                 color: Colors.white,
@@ -252,9 +252,9 @@ final GlobalKey<ScaffoldState> _scaffoldKey = GlobalKey<ScaffoldState>();
                 ],
               ),
             ),
-            SizedBox(height: 10),
-            Padding(
-              padding: const EdgeInsets.symmetric(horizontal: 24),
+            const SizedBox(height: 10),
+            const Padding(
+              padding: EdgeInsets.symmetric(horizontal: 24),
               child: Column(
                 crossAxisAlignment: CrossAxisAlignment.start,
                 children: [
@@ -265,7 +265,7 @@ final GlobalKey<ScaffoldState> _scaffoldKey = GlobalKey<ScaffoldState>();
                       fontWeight: FontWeight.bold,
                     ),
                   ),])),
-                  SizedBox(height: 16),
+                  const SizedBox(height: 16),
               Center(
                 child: Padding(
                   padding: const EdgeInsets.all(8.0),
@@ -310,8 +310,8 @@ final GlobalKey<ScaffoldState> _scaffoldKey = GlobalKey<ScaffoldState>();
                         targetColor: Colors.white,
                         textColor: Colors.white,
                         child: CustomContainer(
-                          color1: Color(0xFFFFD700),
-                          color2: Color(0xFFFFA500),
+                          color1: const Color(0xFFFFD700),
+                          color2: const Color(0xFFFFA500),
                           icon: Icons.content_paste_search_outlined,
                           text: "Control de Linea",
                           fontSize: settingsModel.fontSize,
@@ -426,16 +426,16 @@ final GlobalKey<ScaffoldState> _scaffoldKey = GlobalKey<ScaffoldState>();
                           color1: Colors.redAccent,
                            color2: const Color.fromARGB(255, 158, 51, 51),
                           icon: Icons.dashboard,
-                          text: "Dashboard",
+                          text: "Sistema de Registro",
                           fontSize: settingsModel.fontSize,
-                          onTap: () {
-                            Navigator.push(
-                              context,
-                              MaterialPageRoute(
-                                builder: (context) => Screendashboard(),
-                              ),
-                            );
-                          },
+                          onTap: () async {
+                      final Uri url = Uri.parse('http://192.168.137.1:8888/registros');
+                      if (!await launchUrl(url, mode: LaunchMode.externalApplication)) {
+                        // Si falla, puedes mostrar un error
+                        ScaffoldMessenger.of(context).showSnackBar(
+                          const SnackBar(content: Text("Error al abrir el navegador")),
+                        );
+                      }}
                         ),
                       ),
                     ],
@@ -448,7 +448,7 @@ final GlobalKey<ScaffoldState> _scaffoldKey = GlobalKey<ScaffoldState>();
               child: Column(
                 crossAxisAlignment: CrossAxisAlignment.start,
                 children: [
-                  Text(
+                  const Text(
                     'Comunicados',
                     style: TextStyle(
                       fontSize: 20,
@@ -492,7 +492,7 @@ final GlobalKey<ScaffoldState> _scaffoldKey = GlobalKey<ScaffoldState>();
             ],
           ),
         ),
-        SizedBox(height: 25),
+        const SizedBox(height: 25),
       ])
       )
       );

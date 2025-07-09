@@ -17,7 +17,7 @@ class _LoginScreenState extends State<LoginScreen> {
   String? auxiliarSeleccionado;
   String? turnoSeleccionado;
 
-  final List<String> auxiliares = ['Jorge Machaca', 'Ruben Yanarico', 'Pablo Macuchapi', 'Linder Bozo','Ruben Ordoñez(Supervisor)'];
+  final List<String> auxiliares = ['Jorge Machaca', 'Augusto Barrero', 'Pablo Macuchapi', 'Linder Bozo','Ruben Ordoñez(Supervisor)'];
   final List<String> turnos = ['1', '2', '3', '1L', '2L'];
 
   void _login() async {

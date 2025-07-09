@@ -1,4 +1,4 @@
-import 'package:control_de_calidad/Providers/BDpreformasIPS.dart';
+import 'package:control_de_calidad/Providers/ProviderI6.dart';
 import 'package:control_de_calidad/Providers/Providerids.dart';
 import 'package:control_de_calidad/Ventanas/preformas%20ips/widget_defectosips.dart';
 import 'package:control_de_calidad/widgets/Alertas.dart';
@@ -155,7 +155,7 @@ class ScreenListDatosDEFIPS extends StatelessWidget {
       body: Column(
         children: [
           Titulos(
-            titulo: 'REGISTRO',
+            titulo: 'REGISTRO DEFECTOS',
             tipo: 0,
             
           ),
@@ -190,9 +190,9 @@ class ScreenListDatosDEFIPS extends StatelessWidget {
                       subtitulos: {'Hora': dtdatosdefips.Hora, },
                       expandedContent: generateExpandableContent([
                         ['Defectos: ', 2, dtdatosdefips.Defectos],
-                        ['Criticidad: ', 2, dtdatosdefips.Criticidad],                      
+                        //['Criticidad: ', 2, dtdatosdefips.Criticidad],                      
                         ['CSeccionDefecto: ', 1, dtdatosdefips.CSeccionDefecto],
-                        ['DefectosEncontrados: ', 1, dtdatosdefips.DefectosEncontrados.toString()],
+                        //['DefectosEncontrados: ', 1, dtdatosdefips.DefectosEncontrados.toString()],
                         ['Fase: ', 1, dtdatosdefips.Fase],
                         ['Palet: ', 5, dtdatosdefips.Palet],
                         ['Empaque: ', 5, dtdatosdefips.Empaque],
@@ -298,6 +298,7 @@ class _EditDatosDEFIPSFormState extends State<EditDatosDEFIPSForm> {
           return Scaffold(
           body: Column(
               children:[
+                const Titulos(titulo: 'Formulario Defectos', tipo: 0),
                Expanded(
       child: Padding(
         padding: const EdgeInsets.all(8.0),
@@ -384,11 +385,9 @@ class FormularioGeneralDatosDEFIPS extends StatelessWidget {
       key: _formKey,
       child: Column(
         children: [
-           DefectosScreenWidget(
-            id: id,
-          ),
           CustomInputField(
               name: 'Hora',
+              isreadonly: true,
               onChanged: (value) {
                 final field = _formKey.currentState?.fields['Hora'];
                 field?.validate(); // Valida solo este campo
@@ -397,8 +396,11 @@ class FormularioGeneralDatosDEFIPS extends StatelessWidget {
               label: 'Hora',
               isNumeric: false,
               valorInicial: widget.datosDefIps.Hora,
-              isRequired: true,),                       
-          DropdownSimple(
+              isRequired: true,),
+          DefectosScreenWidget(
+            id: id,
+          ),                      
+        /*  DropdownSimple(
             name: 'CSeccionDefecto',
             label: 'Ubicacion del Defecto',
             textoError: 'Selecciona',
@@ -423,8 +425,7 @@ class FormularioGeneralDatosDEFIPS extends StatelessWidget {
               isNumeric: true,
               valorInicial: widget.datosDefIps.DefectosEncontrados.toString(),
               isRequired: true,),
-
-          DropdownSimple(
+*/          DropdownSimple(
             name: 'Fase',
             label: 'Fase',
             textoError: 'Selecciona',
@@ -475,7 +476,7 @@ class FormularioGeneralDatosDEFIPS extends StatelessWidget {
     ],
   ),
 ),
-          CustomInputField(
+/*       CustomInputField(
               name: 'CantidadProductoRetenido',
               onChanged: (value) {
                 final field = _formKey.currentState?.fields['CantidadProductoRetenido'];
@@ -483,7 +484,9 @@ class FormularioGeneralDatosDEFIPS extends StatelessWidget {
                 field?.save();
               },
               label: 'Cantidad producto retenido',
-              valorInicial: widget.datosDefIps.CantidadProductoRetenido.toString(),
+              valorInicial: widget.datosDefIps.CantidadProductoRetenido == 0
+    ? ''
+    : widget.datosDefIps.CantidadProductoRetenido.toString(),
               isRequired: true,
               isNumeric: true,),
 
@@ -495,10 +498,13 @@ class FormularioGeneralDatosDEFIPS extends StatelessWidget {
                 field?.save();
               },
               label: 'Cantidad producto corregido',
-              valorInicial: widget.datosDefIps.CantidadProductoCorregido.toString(),
+              valorInicial: widget.datosDefIps.CantidadProductoCorregido == 0
+    ? ''
+    : widget.datosDefIps.CantidadProductoCorregido.toString(),
+
               isRequired: true,
               isNumeric: true,),
-
+*/ 
           CustomInputField(
               name: 'Observaciones',
               onChanged: (value) {
@@ -511,9 +517,94 @@ class FormularioGeneralDatosDEFIPS extends StatelessWidget {
               isNumeric: false,
               isRequired: false,
               ),
-
+    const SizedBox(height: 15),
+    const BotonAdvertenciaAnimado(),
+const SizedBox(height: 15),
     ]
       ),
+    );
+  }
+}
+
+class BotonAdvertenciaAnimado extends StatefulWidget {
+  const BotonAdvertenciaAnimado({super.key});
+
+  @override
+  State<BotonAdvertenciaAnimado> createState() => _BotonAdvertenciaAnimadoState();
+}
+
+class _BotonAdvertenciaAnimadoState extends State<BotonAdvertenciaAnimado>
+    with SingleTickerProviderStateMixin {
+  late AnimationController _controller;
+  late Animation<Color?> _borderColorAnimation;
+  late Animation<Color?> _iconColorAnimation;
+
+  @override
+  void initState() {
+    super.initState();
+
+    _controller = AnimationController(
+      duration: const Duration(seconds: 2),
+      vsync: this,
+    )..repeat(reverse: true);
+
+    _borderColorAnimation = ColorTween(
+      begin: Colors.red,
+      end: Colors.orangeAccent,
+    ).animate(_controller);
+
+    _iconColorAnimation = ColorTween(
+      begin: Colors.red,
+      end: Colors.transparent,
+    ).animate(_controller);
+  }
+
+  @override
+  void dispose() {
+    _controller.dispose();
+    super.dispose();
+  }
+
+  @override
+  Widget build(BuildContext context) {
+    return AnimatedBuilder(
+      animation: _controller,
+      builder: (context, child) {
+        return OutlinedButton(
+          style: OutlinedButton.styleFrom(
+            backgroundColor: Colors.white,
+            foregroundColor: Colors.black,
+            side: BorderSide(color: _borderColorAnimation.value ?? Colors.red, width: 2),
+            minimumSize: const Size(180, 100),
+            shape: RoundedRectangleBorder(
+              borderRadius: BorderRadius.circular(12),
+            ),
+            padding: const EdgeInsets.symmetric(vertical: 12, horizontal: 16),
+          ),
+          onPressed: () {
+            // acción al presionar
+          },
+          child: Column(
+            mainAxisSize: MainAxisSize.min,
+            children: [
+              Icon(
+                Icons.warning_amber_rounded,
+                color: _iconColorAnimation.value ?? Colors.red,
+                size: 48,
+              ),
+              const SizedBox(height: 8),
+              const Text(
+                "OBSERVAR PRODUCCIÓN",
+                style: TextStyle(
+                  fontSize: 18,
+                  fontWeight: FontWeight.bold,
+                ),
+                textAlign: TextAlign.center,
+              ),
+            ],
+          ),
+        );
+      },
     );
   }
 }

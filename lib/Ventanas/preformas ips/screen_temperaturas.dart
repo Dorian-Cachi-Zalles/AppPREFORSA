@@ -1,4 +1,4 @@
-import 'package:control_de_calidad/Providers/BDpreformasIPS.dart';
+import 'package:control_de_calidad/Providers/ProviderI6.dart';
 import 'package:control_de_calidad/Providers/Providerids.dart';
 import 'package:control_de_calidad/widgets/Alertas.dart';
 import 'package:control_de_calidad/widgets/boton_agregar.dart';
@@ -99,7 +99,7 @@ class ScreenListDatosTEMPIPS extends StatelessWidget {
       body: Column(
         children: [
           Titulos(
-            titulo: 'REGISTRO',
+            titulo: 'REGISTRO TEMPERATURAS\nPREFORMAS',
             tipo: 0,
           ),
           Expanded(
@@ -315,20 +315,23 @@ class FormularioGeneralDatosTEMPIPS extends StatelessWidget {
       key: _formKey,
       child: Column(
         children: [
+          // Campo Hora
           CustomInputField(
-              name: 'Hora',
-              onChanged: (value) {
-                final field = _formKey.currentState?.fields['Hora'];
-                field?.validate(); // Valida solo este campo
-                field?.save();
-              },
-              label: 'Hora',
-              isNumeric: false,
-              isRequired: true,
-              valorInicial: widget.datosTempips.Hora,
-              ),
+            name: 'Hora',
+            onChanged: (value) {
+              final field = _formKey.currentState?.fields['Hora'];
+              field?.validate();
+              field?.save();
+            },
+            label: 'Hora',
+            isNumeric: false,
+            isreadonly: true,
+            isRequired: true,
+            valorInicial: widget.datosTempips.Hora,
+          ),
 
-           DropdownSimple(
+          // Dropdown Fase
+          DropdownSimple(
             name: 'Fase',
             label: 'Fase',
             textoError: 'Selecciona',
@@ -337,101 +340,116 @@ class FormularioGeneralDatosTEMPIPS extends StatelessWidget {
             dropOptions: dropOptions,
             onChanged: (value) {
               final field = _formKey.currentState?.fields['Fase'];
-              field?.validate(); // Valida solo este campo
+              field?.validate();
               field?.save();
             },
-          ),  
-  Titulos(titulo: 'Cavidades',tipo: 0,),
-  const SizedBox(height: 15,),
-           Column(
-  children: List.generate(2, (fila) => 
-    Row(
-      mainAxisAlignment: MainAxisAlignment.center, // Centrar elementos
-      children: List.generate(2, (columna) {
-        int index = fila * 2 + columna; // Calcula el índice en la lista
-        return Expanded(
-          child: Padding(
-            padding: const EdgeInsets.symmetric(horizontal: 5.0), // Espaciado entre elementos
-            child: CustomInputField(
-              name: 'Cavidades_$index',
-              onChanged: (value) {
-                final field = _formKey.currentState?.fields['Cavidades_$index'];
-                field?.validate();
-                field?.save();
-              },
-              label: 'Cavidad ${index + 1}',
-              isNumeric: true,
-              isRequired: true,
-              valorInicial: widget.datosTempips.Cavidades[index].toString(),
-              
-            ),
           ),
-        );
-      }),
+
+          const SizedBox(height: 16),
+          Align(
+  alignment: Alignment.centerLeft,
+  child: Padding(
+    padding: const EdgeInsets.only(left: 8.0),
+    child: RichText(
+      text: TextSpan(
+        style: const TextStyle(color: Colors.black),
+        children: [
+          const TextSpan(
+            text: "Tabla Matriz de temperatura\n",
+            style: TextStyle(fontSize: 18, fontWeight: FontWeight.bold),
+          ),
+          const TextSpan(
+            text: "Primera fila: ",
+            style: TextStyle(fontWeight: FontWeight.bold),
+          ),
+          const TextSpan(text: "Cavidades\n"),
+          const TextSpan(
+            text: "Segunda fila: ",
+            style: TextStyle(fontWeight: FontWeight.bold),
+          ),
+          const TextSpan(text: "Temperatura del cuerpo\n"),
+          const TextSpan(
+            text: "Tercera fila: ",
+            style: TextStyle(fontWeight: FontWeight.bold),
+          ),
+          const TextSpan(text: "Temperatura del cuello"),
+        ],
+      ),
     ),
   ),
 ),
-Titulos(titulo: 'Temperatura del cuerpo',tipo: 0,),
-  const SizedBox(height: 15,),
-           Column(
-  children: List.generate(2, (fila) => 
-    Row(
-      mainAxisAlignment: MainAxisAlignment.center, // Centrar elementos
-      children: List.generate(2, (columna) {
-        int index = fila * 2 + columna; // Calcula el índice en la lista
-        return Expanded(
-          child: Padding(
-            padding: const EdgeInsets.symmetric(horizontal: 5.0), // Espaciado entre elementos
-            child: CustomInputField(
-              name: 'Tcuerpo_$index',
-              onChanged: (value) {
-                final field = _formKey.currentState?.fields['Tcuerpo_$index'];
-                field?.validate();
-                field?.save();
-              },
-              label: 'Temp. ${index + 1}',
-              isNumeric: true,
-              isRequired: true,
-              valorInicial: widget.datosTempips.Tcuerpo[index].toString(),
-              
-            ),
+
+          const SizedBox(height: 16),
+
+          // Fila CAVIDADES
+          Row(
+            children: List.generate(4, (index) => Expanded(
+              child: Padding(
+                padding: const EdgeInsets.all(6.0),
+                child: CustomInputField(
+                 name: 'Cavidades_$index',
+                  label: 'Cav ${index + 1}',
+                  isNumeric: true,
+                  isRequired: true,
+                  valorInicial: widget.datosTempips.Cavidades[index] == 0
+                      ? ''
+                      : widget.datosTempips.Cavidades[index].toString(),
+                  onChanged: (value) {
+                    final field = _formKey.currentState?.fields['Cav_$index'];
+                    field?.validate();
+                    field?.save();
+                  },
+                ),
+              ),
+            )),
           ),
-        );
-      }),
-    ),),
-),
-Titulos(titulo: 'Temperatura del cuello',tipo: 0,),
-  const SizedBox(height: 15,),
-           Column(
-  children: List.generate(2, (fila) => 
-    Row(
-      mainAxisAlignment: MainAxisAlignment.center, // Centrar elementos
-      children: List.generate(2, (columna) {
-        int index = fila * 2 + columna; // Calcula el índice en la lista
-        return Expanded(
-          child: Padding(
-            padding: const EdgeInsets.symmetric(horizontal: 5.0), // Espaciado entre elementos
-            child: CustomInputField(
-              name: 'Tcuello_$index',
-              onChanged: (value) {
-                final field = _formKey.currentState?.fields['Tcuello_$index'];
-                field?.validate();
-                field?.save();
-              },
-              label: 'Temp. ${index + 1}',
-              isNumeric: true,
-              isRequired: true,
-              valorInicial: widget.datosTempips.Tcuello[index].toString(),
-              
-            ),
+
+          // Fila TEMP CUERPO
+          Row(
+            children: List.generate(4, (index) => Expanded(
+              child: Padding(
+                padding: const EdgeInsets.all(6.0),
+                child: CustomInputField(
+                  name: 'Tcuerpo_$index',
+                  label: 'T.C. ${index + 1}',
+                  isNumeric: true,
+                  isRequired: true,
+                  valorInicial: widget.datosTempips.Tcuerpo[index] == 0
+                      ? ''
+                      : widget.datosTempips.Tcuerpo[index].toString(),
+                  onChanged: (value) {
+                    final field = _formKey.currentState?.fields['Tcuerpo_$index'];
+                    field?.validate();
+                    field?.save();
+                  },
+                ),
+              ),
+            )),
           ),
-        );
-      }),
-    ),
-  ),
-),
-            
-    ]
+
+          // Fila TEMP CUELLO
+          Row(
+            children: List.generate(4, (index) => Expanded(
+              child: Padding(
+                padding: const EdgeInsets.all(6.0),
+                child: CustomInputField(
+                  name: 'Tcuello_$index',
+                  label: 'T.K. ${index + 1}',
+                  isNumeric: true,
+                  isRequired: true,
+                  valorInicial: widget.datosTempips.Tcuello[index] == 0
+                      ? ''
+                      : widget.datosTempips.Tcuello[index].toString(),
+                  onChanged: (value) {
+                    final field = _formKey.currentState?.fields['Tcuello_$index'];
+                    field?.validate();
+                    field?.save();
+                  },
+                ),
+              ),
+            )),
+          ),
+        ],
       ),
     );
   }

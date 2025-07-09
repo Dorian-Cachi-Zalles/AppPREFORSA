@@ -1,6 +1,5 @@
 import 'package:control_de_calidad/Providers/Providerids.dart';
 import 'package:control_de_calidad/Ventanas/home_screen.dart';
-import 'package:control_de_calidad/Ventanas/preformas%20ips/form_coloranteips.dart';
 import 'package:control_de_calidad/Ventanas/preformas%20ips/screen_ctrl_MP.dart';
 import 'package:control_de_calidad/Ventanas/preformas%20ips/screen_ctrl_pesos.dart';
 import 'package:control_de_calidad/Ventanas/preformas%20ips/screen_datosiniciales.dart';
@@ -88,8 +87,7 @@ class _ScreenPreformasIPSState extends State<ScreenPreformasIPS> {
         providers: [     
           ChangeNotifierProvider(create: (_) => RegistroIPSProvider()),           
           ChangeNotifierProvider(create: (_) => EditProviderDatosPESOSIPS()),          
-          ChangeNotifierProvider(create: (_) => ColoranteIPSProvider()),
-           
+          
           
         ],
         child: Scaffold(
