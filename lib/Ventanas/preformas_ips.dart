@@ -1,3 +1,4 @@
+import 'package:control_de_calidad/Providers/DatosProviderPrefProduccionObservada.dart';
 import 'package:control_de_calidad/Providers/Providerids.dart';
 import 'package:control_de_calidad/Ventanas/home_screen.dart';
 import 'package:control_de_calidad/Ventanas/preformas%20ips/screen_ctrl_MP.dart';
@@ -86,7 +87,9 @@ class _ScreenPreformasIPSState extends State<ScreenPreformasIPS> {
     return MultiProvider(
         providers: [     
           ChangeNotifierProvider(create: (_) => RegistroIPSProvider()),           
-          ChangeNotifierProvider(create: (_) => EditProviderDatosPESOSIPS()),          
+          ChangeNotifierProvider(create: (_) => EditProviderDatosPESOSIPS()),
+          ChangeNotifierProvider(create: (_) => EditProviderDatosDEFIPS()),
+          ChangeNotifierProvider(create: (_) => DatosProviderPrefProduccionObservada()),         
           
           
         ],
@@ -191,13 +194,14 @@ drawer: Container(
                       itemBuilder: (context, index) {
                         final  registro = provider.idsRegistrosList[index];
                         final List<Map<String, dynamic>> menu = [
-                          {'title': 'IPS-400', 'screen': const ScreenPreformasIPS(), 'estado': null},
-                          {'title': 'I5', 'screen': null, 'estado': null},
-                          {'title': 'CCM', 'screen': null, 'estado': null},
+                          {'title': 'I6', 'screen': const ScreenPreformasIPS(), 'estado': null},
+                          {'title': 'I9', 'screen': null, 'estado': null},
                           {'title': 'COLORACAP', 'screen': null, 'estado': null},
-                          {'title': 'YUTZUMI', 'screen': null, 'estado': null},
-                          {'title': 'IT 2 HX-258', 'screen': null, 'estado': null},
+                          {'title': 'CCM', 'screen': null, 'estado': null},
                           {'title': 'SOPLADO', 'screen': null, 'estado': null},
+                          {'title': 'I5', 'screen': null, 'estado': null},
+                          {'title': 'IT 2 HX-258', 'screen': null, 'estado': null},                          
+                          {'title': 'YUTZUMI', 'screen': null, 'estado': null},  
                         ];  
                          if (registro.estado) {
                           menu[index]['estado'] = true; 

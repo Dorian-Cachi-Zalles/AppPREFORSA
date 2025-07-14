@@ -1,6 +1,9 @@
+import 'package:control_de_calidad/Configuraciones/catalogodropdowns.dart';
 import 'package:control_de_calidad/Providers/ProviderI6.dart';
 import 'package:control_de_calidad/Providers/Providerids.dart';
+import 'package:control_de_calidad/Ventanas/preformas%20ips/screen_observados.dart';
 import 'package:control_de_calidad/Ventanas/preformas%20ips/widget_defectosips.dart';
+import 'package:control_de_calidad/modelo_de_datos/ProduccionObservada/ProduccionObservada.dart';
 import 'package:control_de_calidad/widgets/Alertas.dart';
 import 'package:control_de_calidad/widgets/boton_agregar.dart';
 import 'package:control_de_calidad/widgets/boton_guardar.dart';
@@ -24,7 +27,7 @@ class DatosDEFIPS {
   final List<String> Defectos;
   final List<String> Criticidad;
   final String CSeccionDefecto;
-  final int DefectosEncontrados;
+  final int idObservado;
   final String Fase;
   final bool Palet;
   final bool Empaque;
@@ -34,6 +37,7 @@ class DatosDEFIPS {
   final double CantidadProductoRetenido;
   final double CantidadProductoCorregido;
   final String? Observaciones;
+  final bool isObservado;
 
   // Constructor de la clase
   const DatosDEFIPS({
@@ -45,7 +49,7 @@ class DatosDEFIPS {
     required this.Defectos,
     required this.Criticidad,
     required this.CSeccionDefecto,
-    required this.DefectosEncontrados,
+    required this.idObservado,
     required this.Fase,
     required this.Palet,
     required this.Empaque,
@@ -54,7 +58,8 @@ class DatosDEFIPS {
     required this.Inocuidad,
     required this.CantidadProductoRetenido,
     required this.CantidadProductoCorregido,
-    this.Observaciones
+    this.Observaciones,
+    required this.isObservado
   });
 
   // Factory para crear una instancia desde un Map
@@ -76,7 +81,7 @@ class DatosDEFIPS {
                 .toList() ??
             [],
       CSeccionDefecto: map['CSeccionDefecto'] as String,
-      DefectosEncontrados: map['DefectosEncontrados'] as int,
+      idObservado: map['idObservado'] as int,
       Fase: map['Fase'] as String,
       Palet: (map['Palet'] as int) == 1,
       Empaque: (map['Empaque'] as int) == 1,
@@ -85,7 +90,8 @@ class DatosDEFIPS {
       Inocuidad: (map['Inocuidad'] as int) == 1,
       CantidadProductoRetenido: map['CantidadProductoRetenido'] as double,
       CantidadProductoCorregido: map['CantidadProductoCorregido'] as double,
-      Observaciones: map['Observaciones'] as String?
+      Observaciones: map['Observaciones'] as String?,
+      isObservado: map['isObservado'] == 1
     );
   }
 
@@ -100,7 +106,7 @@ class DatosDEFIPS {
       'Defectos': Defectos.join(','),
       'Criticidad': Criticidad.join(','),
       'CSeccionDefecto': CSeccionDefecto,
-      'DefectosEncontrados': DefectosEncontrados,
+      'idObservado': idObservado,
       'Fase': Fase,
       'Palet': Palet ? 1 : 0,
       'Empaque': Empaque ? 1 : 0,
@@ -109,7 +115,8 @@ class DatosDEFIPS {
       'Inocuidad': Inocuidad ? 1 : 0,
       'CantidadProductoRetenido': CantidadProductoRetenido,
       'CantidadProductoCorregido': CantidadProductoCorregido,
-      'Observaciones': Observaciones
+      'Observaciones': Observaciones,
+      'isObservado': isObservado ? 1 : 0
     };
   }
 
@@ -119,7 +126,7 @@ class DatosDEFIPS {
     bool? hasErrors,
     bool? hasSend,
     int? idregistro,
-    String? Hora, List<String>? Defectos, List<String>? Criticidad, String? CSeccionDefecto, int? DefectosEncontrados, String? Fase, bool? Palet, bool? Empaque, bool? Embalado, bool? Etiquetado, bool? Inocuidad, double? CantidadProductoRetenido, double? CantidadProductoCorregido, String? Observaciones
+    String? Hora, List<String>? Defectos, List<String>? Criticidad, String? CSeccionDefecto, int? idObservado, String? Fase, bool? Palet, bool? Empaque, bool? Embalado, bool? Etiquetado, bool? Inocuidad, double? CantidadProductoRetenido, double? CantidadProductoCorregido, String? Observaciones, bool? isObservado
   }) {
     return DatosDEFIPS(
       id: id ?? this.id,
@@ -130,7 +137,7 @@ class DatosDEFIPS {
       Defectos: Defectos ?? this.Defectos,
       Criticidad: Criticidad ?? this.Criticidad,
       CSeccionDefecto: CSeccionDefecto ?? this.CSeccionDefecto,
-      DefectosEncontrados: DefectosEncontrados ?? this.DefectosEncontrados,
+      idObservado: idObservado ?? this.idObservado,
       Fase: Fase ?? this.Fase,
       Palet: Palet ?? this.Palet,
       Empaque: Empaque ?? this.Empaque,
@@ -139,7 +146,8 @@ class DatosDEFIPS {
       Inocuidad: Inocuidad ?? this.Inocuidad,
       CantidadProductoRetenido: CantidadProductoRetenido ?? this.CantidadProductoRetenido,
       CantidadProductoCorregido: CantidadProductoCorregido ?? this.CantidadProductoCorregido,
-      Observaciones: Observaciones ?? this.Observaciones
+      Observaciones: Observaciones ?? this.Observaciones,
+      isObservado: isObservado ?? this.isObservado
     );
   }
 }
@@ -154,7 +162,7 @@ class ScreenListDatosDEFIPS extends StatelessWidget {
     return Scaffold(
       body: Column(
         children: [
-          Titulos(
+          const Titulos(
             titulo: 'REGISTRO DEFECTOS',
             tipo: 0,
             
@@ -163,6 +171,7 @@ class ScreenListDatosDEFIPS extends StatelessWidget {
             child: Consumer<DatosProviderPrefIPS>(
               builder: (context, provider, _) {
                 final datosdefips = provider.datosdefipsList;
+                final datosproduccionobervada = provider.datosproduccionobervadaList;
 
                 if (datosdefips.isEmpty) {
                   return const Center(
@@ -178,13 +187,31 @@ class ScreenListDatosDEFIPS extends StatelessWidget {
                   separatorBuilder: (_, __) => const SizedBox(height: 8),
                   itemBuilder: (context, index) {
                     final dtdatosdefips = datosdefips[index];
+                    final dtdatosproducicionobservada = index < datosproduccionobervada.length
+      ? datosproduccionobervada[index]
+      : null;
 
                     return GradientExpandableCard(
                       hasSend: dtdatosdefips.hasSend,
                       idlista: dtdatosdefips.id,
                       numeroindex: (index + 1).toString(),
-                      onSwipedAction: () async {
-                        await provider.removeDatosDEFIPS(context, dtdatosdefips.id!);
+                      onSwipedAction: () async {                        
+                        await provider.removeRegistroDEFIPSyObservada(
+  context: context,
+  id: dtdatosdefips.id!,
+  showUndoSnackBar: (onUndo) {
+    ScaffoldMessenger.of(context).showSnackBar(
+      SnackBar(
+        content: const Text('Registro eliminado'),
+        action: SnackBarAction(
+          label: 'Deshacer',
+          onPressed: onUndo,
+        ),
+      ),
+    );
+  },
+);
+
                       },
                       
                       subtitulos: {'Hora': dtdatosdefips.Hora, },
@@ -192,7 +219,7 @@ class ScreenListDatosDEFIPS extends StatelessWidget {
                         ['Defectos: ', 2, dtdatosdefips.Defectos],
                         //['Criticidad: ', 2, dtdatosdefips.Criticidad],                      
                         ['CSeccionDefecto: ', 1, dtdatosdefips.CSeccionDefecto],
-                        //['DefectosEncontrados: ', 1, dtdatosdefips.DefectosEncontrados.toString()],
+                        //['idObservado: ', 1, dtdatosdefips.idObservado.toString()],
                         ['Fase: ', 1, dtdatosdefips.Fase],
                         ['Palet: ', 5, dtdatosdefips.Palet],
                         ['Empaque: ', 5, dtdatosdefips.Empaque],
@@ -205,12 +232,14 @@ class ScreenListDatosDEFIPS extends StatelessWidget {
                       ]),
                       hasErrors: dtdatosdefips.hasErrors,
                       onOpenModal: () {
+                        if (dtdatosproducicionobservada == null) return;
                         Navigator.push(
                           context,
                           MaterialPageRoute(
                             builder: (context) => EditDatosDEFIPSForm(
                               id: dtdatosdefips.id!,
                               datosDefIps: dtdatosdefips,
+                              tablaProduccionObservada: dtdatosproducicionobservada,
                             ),
                           ),
                         );
@@ -238,7 +267,7 @@ class ScreenListDatosDEFIPS extends StatelessWidget {
               Defectos: [],
               Criticidad: [],
               CSeccionDefecto: 'Al inicio',
-              DefectosEncontrados: 0,
+              idObservado: 0,
               Fase: 'Fase 1',
               Palet: true,
               Empaque: true,
@@ -248,6 +277,22 @@ class ScreenListDatosDEFIPS extends StatelessWidget {
               CantidadProductoRetenido: 0,
               CantidadProductoCorregido: 0,
               Observaciones: ' ',
+              isObservado: false,
+  ));
+  provider.addDatosProduccionObervada(const DatosProduccionObervada(
+     hasErrors: true,
+            hasSend: false,
+            idregistro: 0,
+            Desvio: '',
+            cantidadRetenida: 0,
+            AtributodeProductoNC: '',
+            EstadodelProducto: '',
+            ArranqueLinea: '',
+            ReprocesoConforme: 0,
+            ReprocesoNoConforme: 0,
+            EstadodelProductoC: '',
+            EstadodelProductoNC: '',  // Ya sabemos que no es 0 ni null
+              
   ));
 },
       ),
@@ -257,14 +302,26 @@ class ScreenListDatosDEFIPS extends StatelessWidget {
 
 
 class EditProviderDatosDEFIPS with ChangeNotifier {
-  // Implementación del proveedor, puedes agregar lógica específica aquí
+  List<String>? todasLasOpciones;
+
+  List<String> actualizarOpciones(List<dynamic> constantes, List<String> variables) {
+    todasLasOpciones = [      
+      ...variables,
+      ...constantes,
+    ];
+    notifyListeners(); // Notifica a los widgets que escuchan
+    return todasLasOpciones!;
+  }
 }
+
+
 
 class EditDatosDEFIPSForm extends StatefulWidget {
   final int id;
   final DatosDEFIPS datosDefIps;
+  final DatosProduccionObervada tablaProduccionObservada;
 
-  const EditDatosDEFIPSForm({required this.id, required this.datosDefIps, Key? key})
+  const EditDatosDEFIPSForm({required this.id, required this.datosDefIps, Key? key, required this.tablaProduccionObservada})
       : super(key: key);
 
   @override
@@ -272,25 +329,30 @@ class EditDatosDEFIPSForm extends StatefulWidget {
 }
 
 class _EditDatosDEFIPSFormState extends State<EditDatosDEFIPSForm> {
-  final GlobalKey<FormBuilderState> _formKey = GlobalKey<FormBuilderState>();
-
-  // Mapa para las opciones de Dropdowns
-  final Map<String, List<dynamic>> dropOptionsDatosDEFIPS = {
-    'Secciones': ['Al inicio', 'Medio', 'Final'],
-    'Ffase': ['Fase 1', 'Fase 2', 'Fase 3',],
-  };
+  final GlobalKey<FormBuilderState> _formKeyDEFIPS = GlobalKey<FormBuilderState>();
+  final GlobalKey<FormBuilderState> _formKeyProduccion = GlobalKey<FormBuilderState>();
+  late bool mostrarFormulario;
+  
 
   @override
   void initState() {
     super.initState();
+    mostrarFormulario = widget.datosDefIps.isObservado;    
     // Validación inicial después de la construcción del widget
     WidgetsBinding.instance.addPostFrameCallback((_) {
-      _formKey.currentState?.saveAndValidate();
+     _formKeyDEFIPS.currentState?.saveAndValidate();
+      _formKeyProduccion.currentState?.saveAndValidate();
+    
     });
   }
 
   @override
   Widget build(BuildContext context) {
+  final catalogosProvider = Provider.of<CatalogosProvider>(context);    
+  final Map<String, List<dynamic>> dropOptionsDatosDEFIPS =
+        catalogosProvider.getCatalogo('Defectos');
+  final List<dynamic> opcionesnormales = dropOptionsDatosDEFIPS['Ffase'] ?? []; 
+
     return ChangeNotifierProvider(
       create: (_) => EditProviderDatosDEFIPS(),
       child: Consumer<EditProviderDatosDEFIPS>(
@@ -300,57 +362,97 @@ class _EditDatosDEFIPSFormState extends State<EditDatosDEFIPSForm> {
               children:[
                 const Titulos(titulo: 'Formulario Defectos', tipo: 0),
                Expanded(
-      child: Padding(
-        padding: const EdgeInsets.all(8.0),
-        child: SingleChildScrollView(
-          child: FormularioGeneralDatosDEFIPS(
-              formKey: _formKey,
-              widget: widget,
-              dropOptions: dropOptionsDatosDEFIPS,
-              id: widget.id,
-            ),),),),
+                child: Padding(
+                  padding: const EdgeInsets.all(8.0),
+                  child: SingleChildScrollView(
+          child: Column(
+            children: [
+              FormularioGeneralDatosDEFIPS(
+                  formKey: _formKeyDEFIPS,
+                  widget: widget,
+                  dropOptions: dropOptionsDatosDEFIPS,
+                  id: widget.id,
+                ),          
+          !mostrarFormulario?BotonAdvertenciaAnimado(onPressed:() async {
+          final provider = Provider.of<DatosProviderPrefIPS>(context, listen: false);          
+          final updatedDatito = obtenerDatosActualizados(isObservado: true);
+          await provider.updateDatosDEFIPS(widget.id, updatedDatito);
+          setState(() {
+                mostrarFormulario = true; // 👈 esto fuerza el redibujo
+              });                            
+          }
+           ):const SizedBox.shrink(),
+          const SizedBox(height:10,),
+          mostrarFormulario ? Column(
+            children: [
+          Titulos(titulo: 'Formulario Defectos', tipo: 1,subtitulo: 'Eliminar',accion:() async {
+          final provider = Provider.of<DatosProviderPrefIPS>(context, listen: false);          
+          final updatedDatito = obtenerDatosActualizados(isObservado: false);
+          await provider.updateDatosDEFIPS(widget.id, updatedDatito);
+          setState(() {
+                mostrarFormulario = false; // 👈 esto fuerza el redibujo
+              });
+          } ,),
+              FormularioGeneralDatosProduccionObervada(formKey: _formKeyProduccion, 
+               widget: widget, dropOptions: dropOptionsDatosDEFIPS,
+               opcionesDEf:provider.actualizarOpciones(opcionesnormales,widget.datosDefIps.Defectos)),
+            ],
+          ): const SizedBox.shrink(),
+            ],
+          ),
+          ),
+          ),
+          ),            
             BotonDeslizable(
-  onPressed: () async {
-    final provider = Provider.of<DatosProviderPrefIPS>(context, listen: false);
-    final updatedDatito = obtenerDatosActualizados();
-
-    await provider.updateDatosDEFIPS(widget.id, updatedDatito);
-    Navigator.pop(context);
-  },
-  onSwipedAction: () async {
-    final provider = Provider.of<DatosProviderPrefIPS>(context, listen: false);
-    final updatedDatito = obtenerDatosActualizados();
-
-    await provider.updateDatosDEFIPS(widget.id, updatedDatito);
-
-    bool enviado = await provider.enviarDatosAPIDatosDEFIPS(widget.id);
-
-    if (!enviado) {
-    EnviadoDialog.mostrar(context, false);
-     
-    } else {
-      final updatedDatitoEnviado = obtenerDatosActualizados(hasSend: true);
-      await provider.updateDatosDEFIPS(widget.id, updatedDatitoEnviado);
-     EnviadoDialog.mostrar(context, true);
-      Navigator.pop(context);
-    }
-  },
-),
-         
-          ]));
+            onPressed: () async {
+              final provider = Provider.of<DatosProviderPrefIPS>(context, listen: false);
+              final updatedDatito = obtenerDatosActualizados(isObservado: mostrarFormulario);
+              final updatedDatitoObs = obtenerDatosActualizadosObs();                 
+              await provider.updateDatosDEFIPS(widget.id, updatedDatito);
+              await provider.updateDatosProduccionObervada(widget.id, updatedDatitoObs);
+              Navigator.pop(context);
+            },
+            onSwipedAction: () async {
+              final provider = Provider.of<DatosProviderPrefIPS>(context, listen: false);
+              final updatedDatito = obtenerDatosActualizados(isObservado: mostrarFormulario);
+              final updatedDatitoObs = obtenerDatosActualizadosObs(); 
+              await provider.updateDatosDEFIPS(widget.id, updatedDatito);
+              await provider.updateDatosProduccionObervada(widget.id, updatedDatitoObs);
+          
+              int enviado = await provider.enviarDatosAPIDatosDEFIPS(widget.id);
+              if (enviado >=0 ) {
+              if(mostrarFormulario){
+              bool enviadoObs = await provider.enviarDatosAPIDatosProduccionObervada(widget.id , enviado);
+                if(enviadoObs){
+              final updatedDatito = obtenerDatosActualizados(hasSend: true);    
+              await provider.updateDatosDEFIPS(widget.id, updatedDatito);    
+              EnviadoDialog.mostrar(context, true);
+              Navigator.pop(context);       
+                } else {
+               EnviadoDialog.mostrar(context, false);
+                }      } 
+              } else {
+               EnviadoDialog.mostrar(context, false);     
+              }
+            },
+          ),                   
+          ]
+          )
+          
+          );
         }));
   }
-DatosDEFIPS obtenerDatosActualizados({bool hasSend = false}) {
-  _formKey.currentState?.save();
-  final values = _formKey.currentState!.value;
+DatosDEFIPS obtenerDatosActualizados({bool hasSend = false, bool isObservado= false}) {
+  _formKeyDEFIPS.currentState?.save();
+  final values = _formKeyDEFIPS.currentState!.value;
 
   return
                 widget.datosDefIps.copyWith(
-                hasErrors:_formKey.currentState?.fields.values.any((field) => field.hasError) ?? false,
+                hasErrors:_formKeyDEFIPS.currentState?.fields.values.any((field) => field.hasError) ?? false,
                  hasSend: hasSend,
                   Hora: values['Hora'] ?? widget.datosDefIps.Hora,                
                   CSeccionDefecto: values['CSeccionDefecto'] ?? widget.datosDefIps.CSeccionDefecto,
-                  DefectosEncontrados:(values['DefectosEncontrados']?.isEmpty ?? true)? 0 : int.tryParse(values['DefectosEncontrados']),
+                  idObservado:(values['idObservado']?.isEmpty ?? true)? 0 : int.tryParse(values['idObservado']),
                   Fase: values['Fase'] ?? widget.datosDefIps.Fase,
                   Palet: values['Palet'] ?? widget.datosDefIps.Palet,
                   Empaque: values['Empaque'] ?? widget.datosDefIps.Empaque,
@@ -360,10 +462,40 @@ DatosDEFIPS obtenerDatosActualizados({bool hasSend = false}) {
                   CantidadProductoRetenido:(values['CantidadProductoRetenido']?.isEmpty ?? true)? 0 : double.tryParse(values['CantidadProductoRetenido']),
                   CantidadProductoCorregido:(values['CantidadProductoCorregido']?.isEmpty ?? true)? 0 : double.tryParse(values['CantidadProductoCorregido']),
                   Observaciones: values['Observaciones'] ?? widget.datosDefIps.Observaciones,
+                  isObservado: isObservado 
 
                 );
 
 }
+DatosProduccionObervada obtenerDatosActualizadosObs() {
+ /* final currentState = _formKeyProduccion.currentState;
+
+  if (currentState == null) {
+    // Si el formulario auxiliar no existe, simplemente devuelve los valores actuales sin cambios
+    return widget.tablaProduccionObservada;
+  }
+
+  currentState.save();
+  final values = currentState.value;
+*/
+_formKeyProduccion.currentState?.save();
+  final values = _formKeyProduccion.currentState!.value;
+
+  return widget.tablaProduccionObservada.copyWith(
+    hasErrors:_formKeyProduccion.currentState?.fields.values.any((field) => field.hasError) ?? false,
+                  Desvio: values['Desvio'] ?? widget.tablaProduccionObservada.Desvio,
+                  cantidadRetenida:(values['cantidadRetenida']?.isEmpty ?? true)? 0 : int.tryParse(values['cantidadRetenida']),
+                  AtributodeProductoNC: values['AtributodeProductoNC'] ?? widget.tablaProduccionObservada.AtributodeProductoNC,
+                  EstadodelProducto: values['EstadodelProducto'] ?? widget.tablaProduccionObservada.EstadodelProducto,
+                  ArranqueLinea: values['ArranqueLinea'] ?? widget.tablaProduccionObservada.ArranqueLinea,
+                  ReprocesoConforme:(values['ReprocesoConforme']?.isEmpty ?? true)? 0 : int.tryParse(values['ReprocesoConforme']),
+                  ReprocesoNoConforme:(values['ReprocesoNoConforme']?.isEmpty ?? true)? 0 : int.tryParse(values['ReprocesoNoConforme']),
+                  EstadodelProductoC: values['EstadodelProductoC'] ?? widget.tablaProduccionObservada.EstadodelProductoC,
+                  EstadodelProductoNC: values['EstadodelProductoNC'] ?? widget.tablaProduccionObservada.EstadodelProductoNC,
+  );
+}
+
+
 }
 
 class FormularioGeneralDatosDEFIPS extends StatelessWidget {
@@ -381,7 +513,7 @@ class FormularioGeneralDatosDEFIPS extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    return FormBuilder(
+  return FormBuilder(
       key: _formKey,
       child: Column(
         children: [
@@ -415,7 +547,7 @@ class FormularioGeneralDatosDEFIPS extends StatelessWidget {
           ),
 
         CustomInputField(
-              name: 'DefectosEncontrados',
+              name: 'idObservado',
               onChanged: (value) {
                 final field = _formKey.currentState?.fields['Hora'];
                 field?.validate(); // Valida solo este campo
@@ -423,7 +555,7 @@ class FormularioGeneralDatosDEFIPS extends StatelessWidget {
               },
               label: 'Defectos Encontrados',
               isNumeric: true,
-              valorInicial: widget.datosDefIps.DefectosEncontrados.toString(),
+              valorInicial: widget.datosDefIps.idObservado.toString(),
               isRequired: true,),
 */          DropdownSimple(
             name: 'Fase',
@@ -516,10 +648,7 @@ class FormularioGeneralDatosDEFIPS extends StatelessWidget {
               valorInicial: widget.datosDefIps.Observaciones,
               isNumeric: false,
               isRequired: false,
-              ),
-    const SizedBox(height: 15),
-    const BotonAdvertenciaAnimado(),
-const SizedBox(height: 15),
+              ),    
     ]
       ),
     );
@@ -527,84 +656,78 @@ const SizedBox(height: 15),
 }
 
 class BotonAdvertenciaAnimado extends StatefulWidget {
-  const BotonAdvertenciaAnimado({super.key});
+  final VoidCallback? onPressed;
+
+  const BotonAdvertenciaAnimado({super.key, this.onPressed});
 
   @override
   State<BotonAdvertenciaAnimado> createState() => _BotonAdvertenciaAnimadoState();
 }
 
-class _BotonAdvertenciaAnimadoState extends State<BotonAdvertenciaAnimado>
-    with SingleTickerProviderStateMixin {
-  late AnimationController _controller;
-  late Animation<Color?> _borderColorAnimation;
-  late Animation<Color?> _iconColorAnimation;
+class _BotonAdvertenciaAnimadoState extends State<BotonAdvertenciaAnimado> {
+  bool expandido = false;
+  bool mostrarTexto = false;
 
-  @override
-  void initState() {
-    super.initState();
-
-    _controller = AnimationController(
-      duration: const Duration(seconds: 2),
-      vsync: this,
-    )..repeat(reverse: true);
-
-    _borderColorAnimation = ColorTween(
-      begin: Colors.red,
-      end: Colors.orangeAccent,
-    ).animate(_controller);
-
-    _iconColorAnimation = ColorTween(
-      begin: Colors.red,
-      end: Colors.transparent,
-    ).animate(_controller);
-  }
-
-  @override
-  void dispose() {
-    _controller.dispose();
-    super.dispose();
+  void _handleTap() {
+    if (!expandido) {
+      setState(() {
+        expandido = true;
+      });
+      Future.delayed(const Duration(milliseconds: 300), () {
+        if (mounted) {
+          setState(() {
+            mostrarTexto = true;
+          });
+        }
+      });
+    } else {
+      widget.onPressed?.call();
+    }
   }
 
   @override
   Widget build(BuildContext context) {
-    return AnimatedBuilder(
-      animation: _controller,
-      builder: (context, child) {
-        return OutlinedButton(
-          style: OutlinedButton.styleFrom(
-            backgroundColor: Colors.white,
-            foregroundColor: Colors.black,
-            side: BorderSide(color: _borderColorAnimation.value ?? Colors.red, width: 2),
-            minimumSize: const Size(180, 100),
-            shape: RoundedRectangleBorder(
-              borderRadius: BorderRadius.circular(12),
+    return GestureDetector(
+      onTap: _handleTap,
+      child: AnimatedContainer(
+        duration: const Duration(milliseconds: 300),
+        width: expandido ? 250 : 56,
+        height: expandido ? 72 : 56,
+        decoration: BoxDecoration(
+          color: Colors.red.shade400,
+          borderRadius: BorderRadius.circular(40),
+          boxShadow: const [
+            BoxShadow(
+              color: Colors.black26,
+              blurRadius: 8,
+              offset: Offset(2, 4),
             ),
-            padding: const EdgeInsets.symmetric(vertical: 12, horizontal: 16),
-          ),
-          onPressed: () {
-            // acción al presionar
-          },
-          child: Column(
-            mainAxisSize: MainAxisSize.min,
-            children: [
-              Icon(
-                Icons.warning_amber_rounded,
-                color: _iconColorAnimation.value ?? Colors.red,
-                size: 48,
-              ),
-              const SizedBox(height: 8),
-              const Text(
-                "OBSERVAR PRODUCCIÓN",
-                style: TextStyle(
-                  fontSize: 18,
-                  fontWeight: FontWeight.bold,
+          ],
+        ),
+        padding: const EdgeInsets.symmetric(horizontal: 16),
+        child: Row(
+          mainAxisAlignment: MainAxisAlignment.center,
+          children: [
+            const Icon(
+              Icons.warning_amber_rounded,
+              color: Colors.white,
+              size: 24,
+            ),
+            if (mostrarTexto)
+              const Padding(
+                padding: EdgeInsets.only(left: 12),
+                child: Text(
+                  "OBSERVAR PRODUCCIÓN",
+                  style: TextStyle(
+                    color: Colors.white,
+                    fontSize: 14,
+                    fontWeight: FontWeight.bold,
+                  ),
                 ),
-                textAlign: TextAlign.center,
               ),
-            ],
-          ),
-        );
-      },
+          ],
+        ),
+      ),
     );
   }
 }

@@ -1,4 +1,5 @@
 import 'dart:convert';
+import 'package:control_de_calidad/Configuraciones/catalogodropdowns.dart';
 import 'package:control_de_calidad/Providers/Providerids.dart';
 import 'package:control_de_calidad/Ventanas/preformas%20ips/screen_ctrl_pesos.dart';
 import 'package:control_de_calidad/widgets/Alertas.dart';
@@ -289,19 +290,11 @@ class FormularioRegistroIPS extends StatefulWidget {
 
 class _FormularioRegistroIPSState extends State<FormularioRegistroIPS> {
   final _formKey = GlobalKey<FormBuilderState>();
-
-  // Mapa para las opciones de Dropdowns
-  final Map<String, List<dynamic>> dropOptionsColorante = {
-    'Modalidad': ['Normal', 'Prueba'],
-    'Maquinista': ['Agustin Fernadez', 'Roberto Condori','Limber Flores'],    
-    'Producto': ['CRISTAL EC30', 'VERDE EC30', 'AZUL Z EC30','PLATEADO EC30','ECO CRISTAL EC30'],
-    'Gramaje': ['20.1 M5 R', '23.6 M5 R', '46.6 M5 R','54.6 M5 R'],
-    'Empaque': ['Caja', 'Jaula Pequeña', 'Jaula Grande'], 
-    'Cavhabilitadas': ['96', '95', '94','93','92','91','90']
-  };
-
   @override
   Widget build(BuildContext context) {
+  final catalogosProvider = Provider.of<CatalogosProvider>(context);    
+  final Map<String, List<dynamic>> dropOptionsColorante =
+        catalogosProvider.getCatalogo('DatosIniciales');
     return FutureBuilder(
       future: Provider.of<RegistroIPSProvider>(context, listen: false)._initPrefs(),
       builder: (context, snapshot) {

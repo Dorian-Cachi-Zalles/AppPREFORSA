@@ -1,4 +1,5 @@
 import 'package:control_de_calidad/Configuraciones/Configuraciones.dart';
+import 'package:control_de_calidad/Configuraciones/catalogodropdowns.dart';
 import 'package:control_de_calidad/Providers/ProviderI6.dart';
 import 'package:control_de_calidad/Providers/Providerids.dart';
 import 'package:control_de_calidad/Ventanas/Screen_login.dart';
@@ -6,9 +7,10 @@ import 'package:control_de_calidad/Ventanas/home_screen.dart';
 import 'package:control_de_calidad/Ventanas/preformas%20ips/screen_datosiniciales.dart';
 import 'package:control_de_calidad/widgets/settings_page.dart';
 import 'package:flutter/material.dart';
+import 'package:hive/hive.dart';
+import 'package:hive_flutter/adapters.dart';
 import 'package:provider/provider.dart';
 import 'package:feature_discovery/feature_discovery.dart'; // Importar FeatureDiscovery
-
 
 class AppThemes {
   // Tema claro
@@ -70,22 +72,28 @@ class AppThemes {
   );
 }
 
-void main() async{
+void main() async {
   WidgetsFlutterBinding.ensureInitialized();
   bool isLicensed = await LicenseChecker.checkLicense();
+  await Hive.initFlutter();
 
   runApp(
     FeatureDiscovery(
       // Asegurarse de que FeatureDiscovery envuelva toda la aplicación
       child: MultiProvider(
         providers: [
-          ChangeNotifierProvider(create: (_) => SettingsProvider()),          
+          ChangeNotifierProvider(create: (_) => SettingsProvider()),
           ChangeNotifierProvider(create: (_) => IdsProvider()),
-          ChangeNotifierProvider(create: (_) => DatosProviderPrefIPS()),         
-          ChangeNotifierProvider(create: (_) => RegistroIPSProvider()) ,                    
-
-          
-        ],        
+          ChangeNotifierProvider(create: (_) => DatosProviderPrefIPS()),
+          ChangeNotifierProvider(create: (_) => RegistroIPSProvider()),
+          ChangeNotifierProvider(
+            create: (_) {
+              final provider = CatalogosProvider();
+              provider.cargarDesdeHive(); // cargar desde Hive o usar predeterminado
+              return provider;
+            },
+          ),
+        ],
         child: MyApp(isLicensed: isLicensed),
       ),
     ),
@@ -93,7 +101,6 @@ void main() async{
 }
 
 class MyApp extends StatefulWidget {
-  
   final bool isLicensed;
   const MyApp({super.key, required this.isLicensed});
 
@@ -102,7 +109,6 @@ class MyApp extends StatefulWidget {
 }
 
 class _MyAppState extends State<MyApp> {
-  
   late bool isLicensed;
 
   @override
@@ -117,6 +123,7 @@ class _MyAppState extends State<MyApp> {
       isLicensed = newStatus;
     });
   }
+
   @override
   Widget build(BuildContext context) {
     final authProvider = Provider.of<IdsProvider>(context, listen: false);
@@ -129,11 +136,12 @@ class _MyAppState extends State<MyApp> {
           return MaterialApp(
             debugShowCheckedModeBanner: false,
             title: 'Configuraciones App',
-            theme: settingsProvider.isDarkMode
-                ? AppThemes.darkTheme
-                : AppThemes.lightTheme,                                     
-             home: 
-             isLicensed ? authProvider.acceso ? const HomeScreen(): const LoginScreen() :LicenseExpiredScreen() ,       
+            theme: settingsProvider.isDarkMode ? AppThemes.darkTheme : AppThemes.lightTheme,
+            home: isLicensed
+                ? authProvider.acceso
+                    ? const HomeScreen()
+                    : const LoginScreen()
+                : LicenseExpiredScreen(),
           );
         },
       ),
@@ -141,15 +149,21 @@ class _MyAppState extends State<MyApp> {
   }
 }
 
-
 class LicenseExpiredScreen extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
-    return const Scaffold(      
-      body: Center(child: Column(
+    return const Scaffold(
+      body: Center(
+          child: Column(
         children: [
-          Text('Tu licencia ha expirado contactarse a',style:TextStyle(fontSize: 56),),
-           Text('doriancachim@gmail.com',style:TextStyle(fontSize: 56),),
+          Text(
+            'Tu licencia ha expirado contactarse a',
+            style: TextStyle(fontSize: 56),
+          ),
+          Text(
+            'doriancachim@gmail.com',
+            style: TextStyle(fontSize: 56),
+          ),
         ],
       )),
     );

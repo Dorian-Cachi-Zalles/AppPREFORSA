@@ -1,3 +1,4 @@
+import 'package:control_de_calidad/Configuraciones/catalogodropdowns.dart';
 import 'package:control_de_calidad/Providers/ProviderI6.dart';
 import 'package:control_de_calidad/Providers/Providerids.dart';
 import 'package:control_de_calidad/widgets/Alertas.dart';
@@ -234,10 +235,7 @@ class EditDatosPESOSIPSForm extends StatefulWidget {
 class EditDatosPESOSIPSFormState extends State<EditDatosPESOSIPSForm> {
   final GlobalKey<FormBuilderState> _formKey = GlobalKey<FormBuilderState>();
 
-  // Mapa para las opciones de Dropdowns
-  final Map<String, List<dynamic>> dropOptionsDatosPESOSIPS = {
-    'Opciones': ['Opción 1', 'Opción 2', 'Opción 3'],
-  };
+ 
 
   @override
   void initState() {
@@ -250,6 +248,9 @@ class EditDatosPESOSIPSFormState extends State<EditDatosPESOSIPSForm> {
 
   @override
   Widget build(BuildContext context) {
+  final catalogosProvider = Provider.of<CatalogosProvider>(context);    
+  final Map<String, List<dynamic>> dropOptionsDatosPESOSIPS =
+        catalogosProvider.getCatalogo('PESOSIPS');
     return Consumer<EditProviderDatosPESOSIPS>(
       builder: (context, provider, child) {
         return Scaffold(

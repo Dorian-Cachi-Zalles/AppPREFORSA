@@ -1,3 +1,4 @@
+import 'package:control_de_calidad/Configuraciones/catalogodropdowns.dart';
 import 'package:control_de_calidad/Providers/ProviderI6.dart';
 import 'package:control_de_calidad/Providers/Providerids.dart';
 import 'package:control_de_calidad/widgets/Alertas.dart';
@@ -436,34 +437,6 @@ class EditDatosMPIPSForm extends StatefulWidget {
 class _EditDatosMPIPSFormState extends State<EditDatosMPIPSForm> {
   final GlobalKey<FormBuilderState> _formKey = GlobalKey<FormBuilderState>();
 
-  // Mapa para las opciones de Dropdowns
-  final Map<String, List<dynamic>> dropOptionsDatosMPIPS = {
-     'MateriaPrima': [
-      'JADE CZ 328A',
-      'EASTLON CB 612',
-      'ECOPET',
-      'RAMAPET',
-      'OCTAL',
-      'SKY PET',
-      'CR-BRIGHT',
-      'MOLIDO',
-      'WANKAY',
-    ],
-    'CantidadEmapque': ['1100Kg'],
-    'CantidadBolsones': [
-      1,
-      2,
-      3,
-      4,
-      5,
-      6,
-      7,
-      8,
-      9,
-      10,
-    ],
-  };
-
   @override
   void initState() {
     super.initState();
@@ -475,6 +448,9 @@ class _EditDatosMPIPSFormState extends State<EditDatosMPIPSForm> {
 
   @override
   Widget build(BuildContext context) {
+    final catalogosProvider = Provider.of<CatalogosProvider>(context);    
+  final Map<String, List<dynamic>> dropOptionsDatosMPIPS =
+        catalogosProvider.getCatalogo('MP');
     return ChangeNotifierProvider(
       create: (_) => EditProviderDatosMPIPS(),
       child: Consumer<EditProviderDatosMPIPS>(
@@ -686,14 +662,7 @@ class EditDatosColoranteIPSForm extends StatefulWidget {
 }
 
 class _EditDatosColoranteIPSFormState extends State<EditDatosColoranteIPSForm> {
-  final GlobalKey<FormBuilderState> _formKey = GlobalKey<FormBuilderState>();
-
-  // Mapa para las opciones de Dropdowns
-  final Map<String, List<dynamic>> dropOptionsDatosColoranteIPS = {
-    'Colorante': ['Microbatch Azul', 'Microbatch Verde'],
-    'CantidadBolsone': [1,2,3,4,5],
-  };
-
+  final GlobalKey<FormBuilderState> _formKey = GlobalKey<FormBuilderState>();  
   @override
   void initState() {
     super.initState();
@@ -705,6 +674,9 @@ class _EditDatosColoranteIPSFormState extends State<EditDatosColoranteIPSForm> {
 
   @override
   Widget build(BuildContext context) {
+  final catalogosProvider = Provider.of<CatalogosProvider>(context);    
+  final Map<String, List<dynamic>> dropOptionsDatosColoranteIPS =
+        catalogosProvider.getCatalogo('Colorante');
     return ChangeNotifierProvider(
       create: (_) => EditProviderDatosColoranteIPS(),
       child: Consumer<EditProviderDatosColoranteIPS>(

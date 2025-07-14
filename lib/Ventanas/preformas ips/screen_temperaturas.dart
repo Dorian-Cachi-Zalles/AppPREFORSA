@@ -1,3 +1,4 @@
+import 'package:control_de_calidad/Configuraciones/catalogodropdowns.dart';
 import 'package:control_de_calidad/Providers/ProviderI6.dart';
 import 'package:control_de_calidad/Providers/Providerids.dart';
 import 'package:control_de_calidad/widgets/Alertas.dart';
@@ -202,11 +203,7 @@ class EditDatosTEMPIPSForm extends StatefulWidget {
 
 class _EditDatosTEMPIPSFormState extends State<EditDatosTEMPIPSForm> {
   final GlobalKey<FormBuilderState> _formKey = GlobalKey<FormBuilderState>();
-
-  // Mapa para las opciones de Dropdowns
-  final Map<String, List<dynamic>> dropOptionsDatosTEMPIPS = {
-    'fase': ['Fase 1', 'Fase 2', 'Fase 3'],
-  };
+  
 
   @override
   void initState() {
@@ -219,6 +216,9 @@ class _EditDatosTEMPIPSFormState extends State<EditDatosTEMPIPSForm> {
 
   @override
   Widget build(BuildContext context) {
+    final catalogosProvider = Provider.of<CatalogosProvider>(context);    
+  final Map<String, List<dynamic>> dropOptionsDatosTEMPIPS =
+        catalogosProvider.getCatalogo('Temperatura');
     return ChangeNotifierProvider(
       create: (_) => EditProviderDatosTEMPIPS(),
       child: Consumer<EditProviderDatosTEMPIPS>(
@@ -351,28 +351,28 @@ class FormularioGeneralDatosTEMPIPS extends StatelessWidget {
   child: Padding(
     padding: const EdgeInsets.only(left: 8.0),
     child: RichText(
-      text: TextSpan(
-        style: const TextStyle(color: Colors.black),
+      text: const TextSpan(
+        style: TextStyle(color: Colors.black),
         children: [
-          const TextSpan(
+          TextSpan(
             text: "Tabla Matriz de temperatura\n",
             style: TextStyle(fontSize: 18, fontWeight: FontWeight.bold),
           ),
-          const TextSpan(
+          TextSpan(
             text: "Primera fila: ",
             style: TextStyle(fontWeight: FontWeight.bold),
           ),
-          const TextSpan(text: "Cavidades\n"),
-          const TextSpan(
+          TextSpan(text: "Cavidades\n"),
+          TextSpan(
             text: "Segunda fila: ",
             style: TextStyle(fontWeight: FontWeight.bold),
           ),
-          const TextSpan(text: "Temperatura del cuerpo\n"),
-          const TextSpan(
+          TextSpan(text: "Temperatura del cuerpo\n"),
+          TextSpan(
             text: "Tercera fila: ",
             style: TextStyle(fontWeight: FontWeight.bold),
           ),
-          const TextSpan(text: "Temperatura del cuello"),
+          TextSpan(text: "Temperatura del cuello"),
         ],
       ),
     ),

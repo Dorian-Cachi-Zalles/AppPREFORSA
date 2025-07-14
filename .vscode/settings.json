@@ -1,0 +1,48 @@
+{
+  // 🔍 EXCLUSIONES para no analizar carpetas pesadas
+  "files.watcherExclude": {
+    "**/node_modules/**": true,
+    "**/build/**": true,
+    "**/.dart_tool/**": true,
+    "**/.idea/**": true,
+    "**/.vscode/**": false // true si no quieres que analice la config de VSCode
+  },
+  "search.exclude": {
+    "**/node_modules/**": true,
+    "**/build/**": true,
+    "**/.dart_tool/**": true
+  },
+  "dart.analysisExcludedFolders": [
+    "build",
+    ".dart_tool"
+  ],
+
+  // 🚀 OPTIMIZACIÓN del lenguaje
+  "dart.previewLsp": true,
+  "dart.lineLength": 100,
+  "dart.enableSdkFormatter": true,
+
+  // ⚙️ FLUTTER
+  "flutter.hotReloadOnSave": true,
+  "flutter.hotRestartOnSave": false,
+  "flutter.showEmulatorSelectionNotification": true,
+
+  // 🛠️ FORMATO AUTOMÁTICO
+  "editor.formatOnSave": true,
+  "editor.formatOnType": true,
+
+  // 💾 AUTO GUARDADO
+  "files.autoSave": "onFocusChange", // o "afterDelay" si prefieres guardado cada 1000ms
+  "files.autoSaveDelay": 1000,
+
+  // 🎨 UI y temas
+  "workbench.colorTheme": "Default Dark Modern",
+  "editor.minimap.enabled": false,
+  "editor.smoothScrolling": true,
+  "editor.renderWhitespace": "boundary",
+
+  // ✨ OTROS
+  "explorer.confirmDelete": false,
+  "terminal.integrated.defaultProfile.windows": "Command Prompt",
+  "window.zoomLevel": 1
+}

@@ -5,6 +5,7 @@ import 'package:control_de_calidad/Ventanas/preformas%20ips/screen_ctrl_pesos.da
 import 'package:control_de_calidad/Ventanas/preformas%20ips/screen_defectos.dart';
 import 'package:control_de_calidad/Ventanas/preformas%20ips/screen_procesos.dart';
 import 'package:control_de_calidad/Ventanas/preformas%20ips/screen_temperaturas.dart';
+import 'package:control_de_calidad/modelo_de_datos/ProduccionObservada/ProduccionObservada.dart';
 import 'package:path/path.dart' as p;
 import 'package:flutter/material.dart';
 
@@ -20,6 +21,7 @@ class DatosProviderPrefIPS with ChangeNotifier {
   final String tableDatosDEFIPS = 'datosDefIps';
   final String tableDatosTEMPIPS = 'datosTempips';
   final String tableDatosColoranteIPS = 'DatoscoloranteIPS';
+  final String tableDatosProduccionObervada = 'tablaProduccionObservada';
 
  
   List<DatosPROCEIPS> _datosproceipsList = [];
@@ -28,6 +30,7 @@ class DatosProviderPrefIPS with ChangeNotifier {
   List<DatosDEFIPS> _datosdefipsList = [];
   List<DatosTEMPIPS> _datostempipsList = [];
   List<DatosColoranteIPS> _datoscoloranteipsList = [];
+  List<DatosProduccionObervada> _datosproduccionobervadaList = [];
   
 
   List<DatosPROCEIPS> get datosproceipsList => List.unmodifiable(_datosproceipsList);
@@ -36,6 +39,7 @@ class DatosProviderPrefIPS with ChangeNotifier {
   List<DatosDEFIPS> get datosdefipsList => List.unmodifiable(_datosdefipsList);
   List<DatosTEMPIPS> get datostempipsList => List.unmodifiable(_datostempipsList);
   List<DatosColoranteIPS> get datoscoloranteipsList => List.unmodifiable(_datoscoloranteipsList);
+  List<DatosProduccionObervada> get datosproduccionobervadaList => List.unmodifiable(_datosproduccionobervadaList);
 
   DatosProviderPrefIPS() {
     _initDatabase();
@@ -106,7 +110,7 @@ class DatosProviderPrefIPS with ChangeNotifier {
         Defectos TEXT NOT NULL,
         Criticidad TEXT NOT NULL,
         CSeccionDefecto TEXT NOT NULL,
-        DefectosEncontrados INTEGER NOT NULL,
+        idObservado INTEGER NOT NULL,
         Fase TEXT NOT NULL,
         Palet INTEGER NOT NULL,
         Empaque INTEGER NOT NULL,
@@ -115,7 +119,8 @@ class DatosProviderPrefIPS with ChangeNotifier {
         Inocuidad INTEGER NOT NULL,
         CantidadProductoRetenido REAL NOT NULL,
         CantidadProductoCorregido REAL NOT NULL,
-        Observaciones TEXT
+        Observaciones TEXT,
+        isObservado INTEGER NOT NULL
       )
     ''');
     await db.execute('''
@@ -145,6 +150,24 @@ class DatosProviderPrefIPS with ChangeNotifier {
         CantidadBolsone INTEGER NOT NULL
       )
     ''');
+
+     await db.execute('''
+      CREATE TABLE $tableDatosProduccionObervada (
+        id INTEGER PRIMARY KEY AUTOINCREMENT,
+        hasErrors INTEGER NOT NULL,
+        hasSend INTEGER NOT NULL,
+        idregistro INTEGER NOT NULL,
+        Desvio TEXT NOT NULL,
+        cantidadRetenida INTEGER NOT NULL,
+        AtributodeProductoNC TEXT NOT NULL,
+        EstadodelProducto TEXT NOT NULL,
+        ArranqueLinea TEXT NOT NULL,
+        ReprocesoConforme INTEGER NOT NULL,
+        ReprocesoNoConforme INTEGER NOT NULL,
+        EstadodelProductoC TEXT,
+        EstadodelProductoNC TEXT
+      )
+    ''');
   } 
 
   Future<void> _loadData() async { 
@@ -164,8 +187,11 @@ class DatosProviderPrefIPS with ChangeNotifier {
     final tempmaps = await _db.query(tableDatosTEMPIPS);
     _datostempipsList = tempmaps.map((map) => DatosTEMPIPS.fromMap(map)).toList();
 
-      final maps = await _db.query(tableDatosColoranteIPS);
-  _datoscoloranteipsList = maps.map((map) => DatosColoranteIPS.fromMap(map)).toList();     
+      final colorantemaps = await _db.query(tableDatosColoranteIPS);
+  _datoscoloranteipsList = colorantemaps.map((map) => DatosColoranteIPS.fromMap(map)).toList();
+
+      final maps_datosproduccionobervada = await _db.query(tableDatosProduccionObervada);
+    _datosproduccionobervadaList = maps_datosproduccionobervada.map((map) => DatosProduccionObervada.fromMap(map)).toList();    
   notifyListeners();
   }
 
@@ -209,6 +235,13 @@ class DatosProviderPrefIPS with ChangeNotifier {
     _datostempipsList.add(nuevoDato.copyWith(id: id));
     notifyListeners();
   }
+
+  Future<bool> addDatosProduccionObervada(DatosProduccionObervada nuevoDato) async {
+    final id = await _db.insert(tableDatosProduccionObervada, nuevoDato.toMap());
+    _datosproduccionobervadaList.add(nuevoDato.copyWith(id: id));
+    notifyListeners();
+    return true;
+  } 
 
   Future<void> updateDatosColoranteIPS(int id, DatosColoranteIPS updatedDato) async {
     final index = _datoscoloranteipsList.indexWhere((d) => d.id == id);
@@ -291,6 +324,20 @@ class DatosProviderPrefIPS with ChangeNotifier {
         whereArgs: [id],
       );
       _datospesosipsList[index] = updatedDato.copyWith(id: id);
+      notifyListeners();
+    }
+  }
+
+  Future<void> updateDatosProduccionObervada(int id, DatosProduccionObervada updatedDato) async {
+    final index = _datosproduccionobervadaList.indexWhere((d) => d.id == id);
+    if (index != -1) {
+      await _db.update(
+        tableDatosProduccionObervada,
+        updatedDato.copyWith(id: id).toMap(),
+        where: 'id = ?',
+        whereArgs: [id],
+      );
+      _datosproduccionobervadaList[index] = updatedDato.copyWith(id: id);
       notifyListeners();
     }
   }
@@ -378,6 +425,55 @@ class DatosProviderPrefIPS with ChangeNotifier {
       );
     }
   }
+  Future<void> removeRegistroDEFIPSyObservada({
+  required BuildContext context,
+  required int id,
+  required void Function(VoidCallback onUndo) showUndoSnackBar,
+}) async {
+  final indexDefips = _datosdefipsList.indexWhere((d) => d.id == id);
+  final indexObs = _datosproduccionobervadaList.indexWhere((d) => d.id == id);
+
+  DatosDEFIPS? deletedDefips;
+  DatosProduccionObervada? deletedObs;
+
+  // 1. Eliminar de datosdefips
+  if (indexDefips != -1) {
+    deletedDefips = _datosdefipsList[indexDefips];
+    await _db.delete(
+      tableDatosDEFIPS,
+      where: 'id = ?',
+      whereArgs: [id],
+    );
+    _datosdefipsList.removeAt(indexDefips);
+  }
+
+  // 2. Eliminar de datosproduccionobervada
+  if (indexObs != -1) {
+    deletedObs = _datosproduccionobervadaList[indexObs];
+    await _db.delete(
+      tableDatosProduccionObervada,
+      where: 'id = ?',
+      whereArgs: [id],
+    );
+    _datosproduccionobervadaList.removeAt(indexObs);
+  }
+
+  notifyListeners();
+
+  // 3. Mostrar snackbar con opción de deshacer
+  showUndoSnackBar(() async {
+    if (deletedDefips != null) {
+      final newId = await _db.insert(tableDatosDEFIPS, deletedDefips.toMap());
+      _datosdefipsList.insert(indexDefips, deletedDefips.copyWith(id: newId));
+    }
+    if (deletedObs != null) {
+      final newId = await _db.insert(tableDatosProduccionObervada, deletedObs.toMap());
+      _datosproduccionobervadaList.insert(indexObs, deletedObs.copyWith(id: newId));
+    }
+    notifyListeners();
+  });
+}
+
   Future<void> removeDatosDEFIPS(BuildContext context, int id) async {
     final index = _datosdefipsList.indexWhere((d) => d.id == id);
     if (index != -1) {
@@ -455,11 +551,25 @@ class DatosProviderPrefIPS with ChangeNotifier {
     }
   }
 
-  Future<void> removeAllPesos() async {
-  await _db.delete(tableDatosPESOSIPS);
-  _datospesosipsList.clear();
-  notifyListeners();
-}
+Future<void> removeDatosProduccionObervadaDef(int id, void Function(VoidCallback onUndo) showUndoSnackBar) async {
+    final index = _datosproduccionobervadaList.indexWhere((d) => d.id == id);
+    if (index != -1) {
+      final deletedData = _datosproduccionobervadaList[index];
+      await _db.delete(
+        tableDatosProduccionObervada,
+        where: 'id = ?',
+        whereArgs: [id],
+      );
+      _datosproduccionobervadaList.removeAt(index);
+      notifyListeners();
+       showUndoSnackBar(() async {
+      final newId = await _db.insert(tableDatosProduccionObervada, deletedData.toMap());
+       _datosproduccionobervadaList.insert(index, deletedData.copyWith(id: newId));
+       notifyListeners();
+       });      
+    }
+  }  
+ 
 
 Future<void> removeAllProcesos(BuildContext context) async {
     final confirmation = await showDialog<bool>(
@@ -511,7 +621,10 @@ Future<void> finishProcess() async {
   _datostempipsList.clear();
   await _db.delete(tableDatosColoranteIPS);
   await _db.execute("DELETE FROM sqlite_sequence WHERE name='$tableDatosColoranteIPS'");
-  _datoscoloranteipsList.clear();  
+  _datoscoloranteipsList.clear();
+  await _db.delete(tableDatosProduccionObervada);
+  await _db.execute("DELETE FROM sqlite_sequence WHERE name='$tableDatosProduccionObervada'");
+  _datosproduccionobervadaList.clear();
   notifyListeners();
 }
 
@@ -650,25 +763,23 @@ Future<bool> enviarDatosAPIPeso(int id) async {
     }
   }
 
-  Future<bool> enviarDatosAPIDatosDEFIPS(int id) async {
+  Future<int> enviarDatosAPIDatosDEFIPS(int id) async {
     final url = Uri.parse("${Config.baseUrl}/defectosips");
 
     // Buscar el dato actualizado en SQLite
     final index = _datosdefipsList.indexWhere((d) => d.id == id);
     if (index == -1) {
      
-      return false;
+      return -1;
     }
-
     final DatosDEFIPS dato = _datosdefipsList[index];
-
     // Convertir a JSON sin 'id' y 'hasErrors'
     final Map<String, dynamic> datosJson = {
       "Hora": dato.Hora,
       "Defectos": dato.Defectos,
       "Criticidad": dato.Criticidad,
       "CSeccionDefecto": dato.CSeccionDefecto,
-      "DefectosEncontrados": dato.DefectosEncontrados,
+      "DefectosEncontrados": dato.idObservado,
       "Fase": dato.Fase,
       "Palet": dato.Palet,
       "Empaque": dato.Empaque,
@@ -679,29 +790,25 @@ Future<bool> enviarDatosAPIPeso(int id) async {
       "CantidadProductoCorregido": dato.CantidadProductoCorregido,
       "Observaciones": dato.Observaciones,
       "ID_regis": dato.idregistro
-    };
-
-    
-
+    }; 
     try {
       final response = await http.post(
         url,
         headers: {"Content-Type": "application/json",
           "Accept": "application/json",},
         body: jsonEncode(datosJson),
-      );
-
-      
+      ).timeout(const Duration(seconds: 5));      
 
       if (response.statusCode == 201) {
-        return true;
+      final data = json.decode(response.body);
+      final int messageId = data['id'];     
+      return messageId;
       } else {
-       
-        return false;
+      return -1 ;
       }
     } catch (e) {
      
-      return false;
+      return -1;
     }
   }
 
@@ -796,4 +903,45 @@ Future<bool> enviarDatosAPIDatosTEMPIPS(int id) async {
       return false;
     }
   }
+  Future<bool> enviarDatosAPIDatosProduccionObervada(int id, int iddefec) async {
+    final url = Uri.parse("${Config.baseUrl}/API");
+
+    final index = _datosproduccionobervadaList.indexWhere((d) => d.id == id);
+    if (index == -1) {
+      return false;
+    }
+
+    final DatosProduccionObervada dato = _datosproduccionobervadaList[index];
+
+    final Map<String, dynamic> datosJson = {
+      "ID_regis": iddefec,
+      "Desvio": dato.Desvio,
+      "cantidadRetenida": dato.cantidadRetenida,
+      "AtributodeProductoNC": dato.AtributodeProductoNC,
+      "EstadodelProducto": dato.EstadodelProducto,
+      "ArranqueLinea": dato.ArranqueLinea,
+      "ReprocesoConforme": dato.ReprocesoConforme,
+      "ReprocesoNoConforme": dato.ReprocesoNoConforme,
+      "EstadodelProductoC": dato.EstadodelProductoC,
+      "EstadodelProductoNC": dato.EstadodelProductoNC
+    };
+
+    try {
+      final response = await http.post(
+        url,
+        headers: {"Content-Type": "application/json",
+          "Accept": "application/json",         
+      },
+        body: jsonEncode(datosJson),
+      );
+      if (response.statusCode == 201) {
+        return true;
+      } else {     
+        return false;
+      }
+    } catch (e) {    
+      return false;
+    }
+  }     
 }
+

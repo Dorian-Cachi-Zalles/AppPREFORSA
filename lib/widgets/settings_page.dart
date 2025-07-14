@@ -1,3 +1,4 @@
+import 'package:control_de_calidad/Configuraciones/catalogodropdowns.dart';
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
 import 'package:shared_preferences/shared_preferences.dart';
@@ -125,6 +126,14 @@ class SettingsPage extends StatelessWidget {
             value: settingsProvider.notificationsEnabled,
             onChanged: (value) => settingsProvider.setNotifications(value),
           ),
+          Padding(
+            padding: const EdgeInsets.symmetric(horizontal: 16),
+            child: Row(
+              children: [const Text('Actualizar Listas Desplegables',style: TextStyle(fontSize: 16),),const Spacer(),IconButton(onPressed:() {
+                Provider.of<CatalogosProvider>(context, listen: false).actualizarDesdeApi();
+              },icon: const Icon(Icons.refresh,color: Colors.black,size: 25))],),
+          )
+        
         /*  SwitchListTile(
             title: const Text("Seguimiento de datos"),
             value: settingsProvider.dataTrackingEnabled,

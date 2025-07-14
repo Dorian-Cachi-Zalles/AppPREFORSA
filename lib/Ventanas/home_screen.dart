@@ -2,8 +2,8 @@ import 'package:control_de_calidad/Providers/ProviderI6.dart';
 import 'package:control_de_calidad/Providers/Providerids.dart';
 import 'package:control_de_calidad/Ventanas/EstadoRegistro.dart';
 import 'package:control_de_calidad/Ventanas/Screen_login.dart';
+import 'package:control_de_calidad/Ventanas/observados.dart';
 //import 'package:control_de_calidad/Ventanas/control%20estadistico/Control%20estaditico.dart';
-
 import 'package:control_de_calidad/Ventanas/preformas%20ips/screen_datosiniciales.dart';
 import 'package:control_de_calidad/Ventanas/preformas_ips.dart';
 import 'package:control_de_calidad/widgets/custom_container_menu.dart';
@@ -286,7 +286,7 @@ final GlobalKey<ScaffoldState> _scaffoldKey = GlobalKey<ScaffoldState>();
                           color1:  const Color.fromARGB(255, 29, 163, 58),
                            color2: const Color.fromARGB(255, 18, 95, 34),
                           icon: Icons.read_more_outlined,
-                          text: "Registro de\n estado de Lineas",
+                          text: "Registro de\n Estado de Lineas",
                           fontSize: settingsModel.fontSize,
                           onTap: () {
                             Navigator.push(
@@ -428,14 +428,22 @@ final GlobalKey<ScaffoldState> _scaffoldKey = GlobalKey<ScaffoldState>();
                           icon: Icons.dashboard,
                           text: "Sistema de Registro",
                           fontSize: settingsModel.fontSize,
-                          onTap: () async {
+                      /*    onTap: () async {
                       final Uri url = Uri.parse('http://192.168.137.1:8888/registros');
                       if (!await launchUrl(url, mode: LaunchMode.externalApplication)) {
                         // Si falla, puedes mostrar un error
                         ScaffoldMessenger.of(context).showSnackBar(
                           const SnackBar(content: Text("Error al abrir el navegador")),
                         );
-                      }}
+                      }}*/
+                      onTap: (){
+                        Navigator.push(
+                              context,
+                              MaterialPageRoute(
+                                builder: (context) => const TablaEditablePersonas(),
+                              ),
+                            );
+                      }
                         ),
                       ),
                     ],

@@ -115,7 +115,7 @@ class IdsProvider with ChangeNotifier {
 
 Future<void> _loadData() async {
   final maps = await _db.query(tableRegistros);
-  _idsRegistrosList = maps.map((map) => IdsRegistro.fromMap(map)).take(7).toList();
+  _idsRegistrosList = maps.map((map) => IdsRegistro.fromMap(map)).take(8).toList();
   notifyListeners();
 }
   

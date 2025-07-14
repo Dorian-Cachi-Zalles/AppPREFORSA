@@ -4,7 +4,7 @@ class Titulos extends StatelessWidget {
   final String titulo;
   final String? subtitulo;
   final int tipo;
-  final Future<void> Function()? accion;
+  final VoidCallback? accion;
   
 
   const Titulos({
@@ -43,11 +43,7 @@ class Titulos extends StatelessWidget {
           const Spacer(),
           if (tipo == 1)
             GestureDetector(
-             onTap: accion != null
-                  ? () async {
-                      await accion!();
-                    }
-                  : null,
+             onTap: accion,
               child: Text(
                 tieneSubtitulo ? subtitulo! : 'Borrar Todo',
                 style: TextStyle(

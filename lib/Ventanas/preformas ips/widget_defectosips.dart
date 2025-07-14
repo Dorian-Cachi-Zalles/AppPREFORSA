@@ -1,4 +1,6 @@
+import 'package:control_de_calidad/Configuraciones/catalogodropdowns.dart';
 import 'package:control_de_calidad/Providers/ProviderI6.dart';
+import 'package:control_de_calidad/Ventanas/preformas%20ips/screen_defectos.dart';
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
 
@@ -217,6 +219,13 @@ class _DefectosScreenState extends State<DefectosScreenWidget> {
 @override
 Widget build(BuildContext context) {
   final datosProvider = Provider.of<DatosProviderPrefIPS>(context);
+  final ProviderOpciones = Provider.of<EditProviderDatosDEFIPS>(context);
+  final catalogosProvider = Provider.of<CatalogosProvider>(context);  
+
+  final Map<String, List<dynamic>> dropOptionsDatosDEFIPS =
+        catalogosProvider.getCatalogo('Defectos');
+  final List<dynamic> opcionesnormales = dropOptionsDatosDEFIPS['Ffase'] ?? []; 
+
   final dato = datosProvider.datosdefipsList.firstWhere(
     (dato) => dato.id == widget.id,
   );
@@ -259,16 +268,17 @@ Widget build(BuildContext context) {
               onTap: () {
                 setState(() {
                   if (isSelected) {
-                    dato.Defectos.remove(codigo);
+                    dato.Defectos.remove(codigo);                   
+                    
                   } else {
-                    dato.Defectos.add(codigo);
+                    dato.Defectos.add(codigo);                    
                   }
                 });
-
                 datosProvider.updateDatosDEFIPS(
                   dato.id!,
                   dato.copyWith(Defectos: dato.Defectos),
                 );
+                ProviderOpciones.actualizarOpciones(opcionesnormales, dato.Defectos);
               },
               child: Container(
                 padding: const EdgeInsets.symmetric(vertical: 8, horizontal: 12),
